@@ -1,0 +1,1330 @@
+		Configuration/Preference/Options/Settings
+			by FC on 2016-12-30
+
+* General								{{{1
+    Configuration, also Preference/Options/Settings, represents user settings.
+
+				Client Code
+				     |
+				     v
+   +-------------------------- Configuration ---------------------------+
+   |	/ API Style 1 \			/ 	API Style 2 	  \	|
+   |	\ Bean Object /			\ List of key-value pairs /	|
+   |						     |			|
+   |						Memory Storage		|
+   |						/	    \		|
+   |					 Flat List    Hierarchical Tree	|
+   |									|
+   |		+- Basic Underlying Techniques -+ 			|
+   |		|* data type conversion		| 			|
+   |		|* value interpolation		| 			|
+   |		|* multiple values		| 			|
+   |		|* missing property and default	| 			|
+   |		|* event notification		|			|
+   |		+-------------------------------+			|
+   |									|
+   |  +-- File Underlying Techniques ---+				|
+   |  |* read write			|				|
+   |  |* auto save			|				|
+   |  |* auto reload			|				|
+   |  |* serialization format		|				|
+   |  +-----------------|---------------+				|
+   |			|						|
+   +--------------------|-----------------------------------------------+
+			|	     ^
+			|	     |
+			|    Serialization format
+			|    /			\
+			|   /			 \
+		     File Format		Other Formats
+		    /	  |	\
+		  INI	JSON	XML
+
+** Serialization Format
+   | File
+   | | INI file
+   | | Properties file
+   | | JSON file
+   | | XML file
+   | Database
+   | Others
+
+** API Style
+   | A general list of key-value pairs
+   | | A flat list
+   | | A hierarchical tree
+   | entity/bean object
+*** API Style 1: A general list of key-value pairs
+    Value is retrieved by a key that is usually a String. 
+    Sample code:
+	Configuration conf = new ConfigurationFactory.create(file_path);
+	int bufferSize = conf.getInt("buffer_size");
+	conf.setInt("buffer_size", 4096);
+	String windowWidth = conf.getString("window.width")
+	String windowHeight = conf.getString("window.height")
+**** Memory Storage 1: A flat list
+**** Memory Storage 1: A hierarchical tree
+
+*** API Style 2: entity/bean object
+    Sample code:
+	class MyAppConfig {
+	    public property int bufferSize;
+	    public property WindowConfig window;
+	}
+	class WindowConfig {
+	    public property int width;
+	    public property int height;
+	}
+	MyAppConfig conf = new ConfigurationFactory.create(file_path);
+	int bufferSize = conf.bufferSize;
+	conf.bufferSize = 4096;
+	String windowWidth = conf.window.width
+	String windowHeight = conf.window.height
+*** Comparison
+    
+** Underlying techniques
+    Below techniques are required to provide convenient and useful APIs:
+    - data type conversion
+    - value interpolation
+    - multiple values
+    - event notification
+    File base configuration requires more techniques:
+    - read write
+    - auto save
+    - auto reload
+    - serialization format
+** Sources
+   | Single source
+   | Multiple sources
+   | | include
+   | | composite
+   | | combined
+
+** References
+*** Apache Common Configuration
+    http://commons.apache.org/proper/commons-configuration/
+*** JDK Preferences
+    java.utils.prefs.Preferences
+*** Microsoft Configuration
+    source code:	https://github.com/aspnet/Configuration
+    doc:	https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration
+*** Eclipse Preferences
+    org.osgi.service.prefs.Preferences
+
+* Apache Common Configuration						{{{1
+** Overview
+  Class Hierarchy
+      Configuration
+      | AbstractConfiguration
+      | | BaseConfiguration
+      | | | AbstractFileConfiguration
+      | | | | PropertiesConfiguration
+      | | HierarchicalConfiguration
+      | | | AbstractHierarchicalFileConfiguration
+      | | | | XMLConfiguration
+      | | | | HierarchicalINIConfiguration
+      | | SubsetConfiguration
+      FileConfiguration
+** Key Notes of Implementation
+public interface Configuration {//{{{
+    Configuration subset(String prefix);
+    boolean isEmpty();
+    boolean containsKey(String key);
+    Object getProperty(String key);
+    Iterator<String> getKeys(String prefix);
+    Iterator<String> getKeys();
+    Properties getProperties(String key);
+    void addProperty(String key, Object value);
+    void setProperty(String key, Object value);
+    void clearProperty(String key);
+    void clear();
+
+    boolean	getBoolean(String key);
+    boolean	getBoolean(String key, boolean defaultValue);
+    Boolean	getBoolean(String key, Boolean defaultValue);
+    byte	getByte(String key);
+    byte	getByte(String key, byte defaultValue);
+    Byte	getByte(String key, Byte defaultValue);
+    double	getDouble(String key);
+    double	getDouble(String key, double defaultValue);
+    Double	getDouble(String key, Double defaultValue);
+    float	getFloat(String key);
+    float	getFloat(String key, float defaultValue);
+    Float	getFloat(String key, Float defaultValue);
+    int		getInt(String key);
+    int		getInt(String key, int defaultValue);
+    Integer	getInteger(String key, Integer defaultValue);
+    long	getLong(String key);
+    long	getLong(String key, long defaultValue);
+    Long	getLong(String key, Long defaultValue);
+    short	getShort(String key);
+    short	getShort(String key, short defaultValue);
+    Short	getShort(String key, Short defaultValue);
+    BigDecimal	getBigDecimal(String key);
+    BigDecimal	getBigDecimal(String key, BigDecimal defaultValue);
+    BigInteger	getBigInteger(String key);
+    BigInteger	getBigInteger(String key, BigInteger defaultValue);
+    String	getString(String key);
+    String	getString(String key, String defaultValue);
+    String[]		getStringArray(String key);
+    List<Object>	getList(String key);
+    List<Object>	getList(String key, List<?> defaultValue);
+}//}}}
+
+/** File Configuration interface defines a standard API for accessing files.
+ * Often configuration properties are stored in files on the user's hard disk, e.g.
+ * in .properties files or as XML documents. Configuration classes that deal with
+ * such properties need to provide typical operations like loading or saving files. 
+ * The files to be processed can be specified in several different flavors like 
+ * java.io.File objects, relative or absolute path names, or URLs.
+ */
+public interface FileConfiguration extends Configuration {//{{{
+	// -- Loading --
+    void load() throws ConfigurationException;
+    void load(String fileName) throws ConfigurationException;
+    void load(File file) throws ConfigurationException;
+    void load(URL url) throws ConfigurationException;
+    void load(InputStream in) throws ConfigurationException;
+    void load(InputStream in, String encoding) throws ConfigurationException;
+    void load(Reader in) throws ConfigurationException;
+	// -- Saving --
+    void save() throws ConfigurationException;
+    void save(String fileName) throws ConfigurationException;
+    void save(File file) throws ConfigurationException;
+    void save(URL url) throws ConfigurationException;
+    void save(OutputStream out) throws ConfigurationException;
+    void save(OutputStream out, String encoding) throws ConfigurationException;
+    void save(Writer out) throws ConfigurationException;
+	// -- Specifying the file --
+    String getFileName();
+    void   setFileName(String fileName);
+    File getFile();
+    void setFile(File file);
+    URL  getURL();
+    void setURL(URL url);
+    String getEncoding();
+    void   setEncoding(String encoding);
+    String getBasePath();
+    void   setBasePath(String basePath);
+	// -- Automatic Saving --
+    boolean isAutoSave();
+    void   setAutoSave(boolean autoSave);
+	// -- Automatic Reloading --
+    ReloadingStrategy getReloadingStrategy();
+    void setReloadingStrategy(ReloadingStrategy strategy);
+    void reload();
+}//}}}
+
+/** Abstract configuration class. Implements basic features but does not store any data:
+ * - Data conversion support.  A sub class only needs to implement getProperty().
+ * - Support for variable interpolation.
+ * - Support multiple values by splitting by a list delimiter character.
+ * - Allows to specify how missing properties are treated. Per default 
+ *   the get methods will return null if key is not found (and no default value is provided).
+ *   This behavior can be changed to throw an exception if setThrowExceptionOnMissing().
+ *   Unfortunately support for the throwExceptionOnMissing property is not always consistent.
+ * - Basic event support. Whenever this configuration is modified registered listeners are notified.
+ * implement below methods to write your own Configuration class:
+ * 	getProperty(), isEmpty(), containsKey(), getKeys(), addPropertyDirect(), clearPropertyDirect()
+ */
+public abstract class AbstractConfiguration extends EventSource implements Configuration {//{{{
+	// -- Data conversion support --
+	public long getLong(String key) {
+		Long l = getLong(key, null);
+		if (l != null)
+			return l.longValue();
+		else	// [FC] exception must be thrown as null is invalid value for primitive type.
+			throw new NoSuchElementException(key);
+	}
+
+	public long getLong(String key, long defaultValue) {
+		return getLong(key, new Long(defaultValue)).longValue();
+	}
+
+	public Long getLong(String key, Long defaultValue) {
+		Object value = resolveContainerStore(key);
+		if (value == null) {
+			return defaultValue;
+		} else {
+			try {
+				return PropertyConverter.toLong(interpolate(value));
+			} catch (ConversionException e) {
+				throw new ConversionException(key, e);
+			}
+		}
+	}
+
+	public String getString(String key) {
+		String s = getString(key, null);
+		if (s != null) {
+			return s;
+		} else if (isThrowExceptionOnMissing()) {
+			throw new NoSuchElementException(key);
+		} else {
+			return null;	// [FC] return null if not to throw exception.
+		}
+	}
+
+	public String getString(String key, String defaultValue) {
+		Object value = resolveContainerStore(key);
+		if (value instanceof String) {
+			return interpolate((String) value);
+		} else if (value == null) {
+			return interpolate(defaultValue);
+		} else {
+			throw new ConversionException(key);
+		}
+	}
+
+	/** Returns an object from the store described by the key. If the value is
+	 * a Collection object, replace it with the first object in the collection. */
+	protected Object resolveContainerStore(String key) {
+		Object value = getProperty(key);
+		if (value != null) {
+			if (value instanceof Collection) {
+				Collection<?> collection = (Collection<?>) value;
+				value = collection.isEmpty() ? null : collection.iterator().next();
+			} else if (value.getClass().isArray() && Array.getLength(value) > 0) {
+				value = Array.get(value, 0);
+			}
+		}
+		return value;
+	}
+
+	// -- Event support --
+	public static final int EVENT_ADD_PROPERTY = 1;
+	public static final int EVENT_CLEAR_PROPERTY = 2;
+	public static final int EVENT_SET_PROPERTY = 3;
+	public static final int EVENT_CLEAR = 4;
+	public static final int EVENT_READ_PROPERTY = 5;	// @since 1.4
+
+	protected abstract void addPropertyDirect(String key, Object value);
+	protected void clearPropertyDirect(String key) { }
+
+	public void setProperty(String key, Object value) {
+		fireEvent(EVENT_SET_PROPERTY, key, value, true);
+		setDetailEvents(false);
+		try {
+			clearProperty(key);
+			addProperty(key, value);
+		} finally {
+			setDetailEvents(true);
+		}
+		fireEvent(EVENT_SET_PROPERTY, key, value, false);
+	}
+
+	public void clearProperty(String key) {
+		fireEvent(EVENT_CLEAR_PROPERTY, key, null, true);
+		clearPropertyDirect(key);
+		fireEvent(EVENT_CLEAR_PROPERTY, key, null, false);
+	}
+
+	public void addProperty(String key, Object value) {
+		fireEvent(EVENT_ADD_PROPERTY, key, value, true);
+		// [FC] Split a single string into multiple values 
+		// if the property value is a string and delimiter is specified.
+		addPropertyValues(key, value,
+			isDelimiterParsingDisabled() ? DISABLED_DELIMITER : getListDelimiter());
+		fireEvent(EVENT_ADD_PROPERTY, key, value, false);
+	}
+
+    private void addPropertyValues(String key, Object value, char delimiter) {
+        Iterator<?> it = PropertyConverter.toIterator(value, delimiter);
+        while (it.hasNext()) {
+            addPropertyDirect(key, it.next());
+        }
+    }
+
+	public void clear() {
+		fireEvent(EVENT_CLEAR, null, null, true);
+		setDetailEvents(false);
+		boolean useIterator = true;
+		try {
+			Iterator<String> it = getKeys();
+			while (it.hasNext()) {
+				String key = it.next();
+				if (useIterator) {
+					try {
+						it.remove();
+					} catch (UnsupportedOperationException usoex) {
+						useIterator = false;
+					}
+				}
+
+				if (useIterator && containsKey(key)) {
+					useIterator = false;
+				}
+
+				if (!useIterator) {
+					// workaround for Iterators that do not remove the property
+					// on calling remove() or do not support remove() at all
+					clearProperty(key);
+				}
+			}
+		} finally {
+			setDetailEvents(true);
+		}
+		fireEvent(EVENT_CLEAR, null, null, false);
+	}
+
+	// -- Support multiple values --
+	// [FC] getList() implementation is similar to getStringArray()
+
+	private static char defaultListDelimiter = ',';
+	private char listDelimiter = defaultListDelimiter
+	private boolean delimiterParsingDisabled;
+    /** Constant for the disabled list delimiter. This character is passed to the
+     * list parsing methods if delimiter parsing is disabled. So this character
+     * should not occur in string property values. */
+	private static final char DISABLED_DELIMITER = '\0';
+
+	/** [FC] multiple values splitting was done in setProperty() or addProperty(). */
+	public String[] getStringArray(String key) {
+		Object value = getProperty(key);
+		String[] array;
+		if (value instanceof String) {
+			array = new String[] { interpolate((String) value) };
+		} else if (value instanceof List) {
+			List<?> list = (List<?>) value;
+			array = new String[list.size()];
+			for (int i = 0; i < array.length; i++) {
+				array[i] = interpolate(ObjectUtils.toString(list.get(i), null));
+			}
+		} else if (value == null) {
+			array = new String[0];
+		} else if (isScalarValue(value)) {
+			array = new String[] { value.toString() };
+		} else {
+			throw new ConversionException(key);
+		}
+		return array;
+	}
+
+	// -- Allows to specify how missing properties are treated. --
+    private boolean throwExceptionOnMissing;
+
+	// -- Support for variable interpolation. --
+	private StrSubstitutor substitutor;
+    public synchronized StrSubstitutor getSubstitutor() {
+        if (substitutor == null) {
+            substitutor = new StrSubstitutor(createInterpolator());
+        }
+        return substitutor;
+    }
+	
+    public ConfigurationInterpolator getInterpolator() {
+        return (ConfigurationInterpolator) getSubstitutor().getVariableResolver();
+    }
+
+    protected ConfigurationInterpolator createInterpolator() {
+        ConfigurationInterpolator interpol = new ConfigurationInterpolator();
+        interpol.setDefaultLookup(new StrLookup() {
+            @Override
+            public String lookup(String var) {
+                Object prop = resolveContainerStore(var);
+                return (prop != null) ? prop.toString() : null;
+            }
+        });
+        return interpol;
+    }
+
+    /** interpolate key names to handle ${key} stuff */
+    protected String interpolate(String base) {
+        Object result = interpolate((Object) base);
+        return (result == null) ? null : result.toString();
+    }
+
+    /** Returns the interpolated value. Non String values are returned without change. */
+    protected Object interpolate(Object value) {
+        return PropertyConverter.interpolate(value, this);
+    }
+
+    public Configuration subset(String prefix) {
+        return new SubsetConfiguration(this, prefix, ".");
+    }
+
+	public Iterator<String> getKeys(String prefix) {
+		return new PrefixedKeysIterator(getKeys(), prefix);
+	}
+
+	public Properties getProperties(String key) {
+		return getProperties(key, null);
+	}
+
+	public Properties getProperties(String key, Properties defaults) {
+		/* Grab an array of the tokens for this key. */
+		String[] tokens = getStringArray(key);
+
+		/* Each token is of the form 'key=value'. */
+		Properties props = defaults == null ? new Properties() : new Properties(defaults);
+		for (String token : tokens) {
+			int equalSign = token.indexOf('=');
+			if (equalSign > 0) {
+				String pkey = token.substring(0, equalSign).trim();
+				String pvalue = token.substring(equalSign + 1).trim();
+				props.put(pkey, pvalue);
+			} else if (tokens.length == 1 && "".equals(token)) {
+				break;// Semantically equivalent to an empty Properties object.
+			} else {
+				throw new IllegalArgumentException(token + " does not contain an equals sign");
+			}
+		}
+		return props;
+	}
+}//}}}
+
+/** Basic configuration class provides the store in memory for configuration data. */
+public class BaseConfiguration extends AbstractConfiguration implements Cloneable {//{{{
+	private Map<String, Object> store = new LinkedHashMap<String, Object>();
+
+	public Object getProperty(String key)	{ return store.get(key); }
+	public boolean isEmpty()				{ return store.isEmpty(); }
+	public boolean containsKey(String key)	{ return store.containsKey(key); }
+	public Iterator<String> getKeys()		{ return store.keySet().iterator(); }
+
+	@Override public void clear() {
+		fireEvent(EVENT_CLEAR, null, null, true);
+		store.clear();
+		fireEvent(EVENT_CLEAR, null, null, false);
+	}
+	
+	@Override protected void clearPropertyDirect(String key) {
+		if (containsKey(key))
+			store.remove(key);
+	}
+
+	@Override protected void addPropertyDirect(String key, Object value) {
+		Object previousValue = getProperty(key);
+		if (previousValue == null) {
+			store.put(key, value);
+		} else if (previousValue instanceof List) {
+			// safe to case because we have created the lists ourselves
+			@SuppressWarnings("unchecked")
+			List<Object> valueList = (List<Object>) previousValue;
+			valueList.add(value);			// the value is added to the existing list
+		} else {
+			// Replace the previous value by a list containing the previous and new values
+			List<Object> list = new ArrayList<Object>();
+			list.add(previousValue);
+			list.add(value);
+			store.put(key, list);
+		}
+	}
+}//}}}
+
+/**
+ * Sub class must implement load(Reader in)
+ */
+public abstract class AbstractFileConfiguration extends BaseConfiguration
+		implements FileConfiguration, FileSystemBased {//{{{
+	private FileSystem fileSystem = FileSystem.getDefaultFileSystem();
+
+    public AbstractFileConfiguration(String fileName) {
+        this();
+        setFileName(fileName);  // store the file name
+        load();        			// load the file
+    }
+
+	// -- load method family --
+    public void load() { if (sourceURL != null) load(sourceURL); else load(getFileName()); }
+	public void load(String fileName) {
+		load(ConfigurationUtils.locate(this.fileSystem, basePath, fileName));
+	}
+	public void load(File file) { load(ConfigurationUtils.toURL(file)); }
+	public void load(URL url) {
+        InputStream in = fileSystem.getInputStream(url);
+		load(in);
+		in.close();
+	}
+	public void load(InputStream in) { load(in, getEncoding()); }
+	public void load(InputStream in, String encoding) { 
+		load(new InputStreamReader(in, encoding));	// call load(Reader in)
+	}
+}//}}}
+
+/** Properties configuration class with extensions:
+ * - Include another configuration file.
+ * - Mutliple values.
+ * - Special Characters and Escaping.
+ * - comment lines.
+ * Example.
+ * usergui.properties
+ *	include = colors.properties
+ *	window.width = 500
+ *	window.height = 300
+ * colors.properties
+ *	colors.pie = #FF0000, #00FF00
+ *	colors.pie = #0000FF
+ * ConfigClientCode:
+ *	Configuration config = new PropertiesConfiguration("usergui.properties");
+ *	Dimension d = new Dimension(config.getInt("window.width"), config.getInt("window.height"));
+ *	String[] colors = config.getStringArray("colors.pie");
+ *	config.setProperty("window.width", 400);
+ * [FC] Implementation Notes:
+ * - PropertiesReader is a independent lexer for properties file.
+ * - PropertiesWriter is a independent writer for properties file.
+ * - PropertiesConfigurationLayout is parser for properties file.
+ */
+public class PropertiesConfiguration extends AbstractFileConfiguration {//{{{
+    static final String COMMENT_CHARS = "#!";
+    static final String DEFAULT_SEPARATOR = " = ";
+    private static final char[] SEPARATORS = new char[] {'=', ':'};
+    private static final char[] WHITE_SPACE = new char[]{' ', '\t', '\f'};
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    private static final String ESCAPE = "\\";
+    private static final String DOUBLE_ESC = ESCAPE + ESCAPE;
+
+    public PropertiesConfiguration()				{ layout = createLayout(); }
+    public PropertiesConfiguration(File file)		{ super(file); getLayout(); }
+    public PropertiesConfiguration(String fileName)	{ super(fileName); }	
+    public PropertiesConfiguration(URL url)			{ super(url); }
+
+	/** Called by AbstractFileConfiguration.load(InputStream in, String encoding) */
+	public synchronized void load(Reader in) throws ConfigurationException {
+		boolean oldAutoSave = isAutoSave();
+		setAutoSave(false);
+		try {
+			getLayout().load(in);
+		} finally {
+			setAutoSave(oldAutoSave);
+		}
+	}
+
+	public void save(Writer writer) throws ConfigurationException {
+		enterNoReload();
+		try {
+			getLayout().save(writer);
+		} finally {
+			exitNoReload();
+		}
+	}
+
+	/** This method is invoked by PropertiesConfigurationLayout.load(Reader in) */
+    boolean propertyLoaded(String key, String value) throws ConfigurationException {
+		// handle the special include instruction.
+        if (StringUtils.isNotEmpty(getInclude()) && key.equalsIgnoreCase(getInclude())) {
+            if (isIncludesAllowed()) {
+                String[] files;
+                if (!isDelimiterParsingDisabled()) {
+                    files = StringUtils.split(value, getListDelimiter());
+                } else {
+                    files = new String[]{value};
+                }
+                for (String f : files) {
+                    loadIncludeFile(interpolate(f.trim()));
+                }
+            }
+            return false;
+        }
+		// normal property
+		else {
+            addProperty(key, value);
+            return true;
+        }
+    }
+
+	// -- Include another configuration file --
+    private boolean includesAllowed = true;
+    private static String include = "include";
+
+	private void loadIncludeFile(String fileName) throws ConfigurationException {
+		URL baseURL
+		URL url = ConfigurationUtils.locate(getFileSystem(), getBasePath(), fileName);
+		if (url == null && (baseURL = getURL()) != null)
+			url = ConfigurationUtils.locate(getFileSystem(), baseURL.toString(), fileName);
+		if (url == null)
+			throw new ConfigurationException("Cannot resolve include file " + fileName);
+		load(url);
+	}
+
+	// -- Layout --
+	private PropertiesConfigurationLayout layout;
+}//}}}
+
+public class PropertyConverter {
+    /** Performs interpolation of the specified value. This method checks if the
+     * given value contains variables of the form <code>${...}</code>. If
+     * this is the case, all occurrences will be substituted by their current
+     * values. */
+    public static Object interpolate(Object value, AbstractConfiguration config) {
+		return value instanceof String
+			 ? config.getSubstitutor().replace((String) value)
+			 : value;
+    }
+
+}
+
+public class HierarchicalConfiguration extends AbstractConfiguration 
+	implements Serializable, Cloneable {
+    public static final int EVENT_CLEAR_TREE = 10;
+    public static final int EVENT_ADD_NODES = 11;
+    public static final int EVENT_SUBNODE_CHANGED = 12;
+
+	// -- Expression engine --
+    private static ExpressionEngine defaultExpressionEngine;
+    private transient ExpressionEngine expressionEngine;
+
+}
+
+/** A specialized hierarchical configuration class that is able to parse XML documents.
+ * The parsed document will be stored keeping its structure. The class also tries to 
+ * preserve as much information from the loaded XML document as possible, including
+ * comments and processing instructions. These will be contained in documents created
+ * by the save() methods, too.
+ * Besides the extended features by inheriting from AbstractConfiguration, new features are:
+ * - Expression engine.
+ */
+public class XMLConfiguration extends AbstractHierarchicalFileConfiguration
+    implements EntityResolver, EntityRegistry {
+
+}
+
+/** CompositeConfiguration allows you to add multiple Configuration objects to an
+ * aggregated configuration. If you add Configuration1, and then Configuration2,
+ * any properties shared will mean that the value defined by Configuration1 will
+ * be returned. If Configuration1 doesn't have the property, then Configuration2
+ * will be checked. You can add multiple different types or the same type of
+ * properties file.
+ * 
+ * When querying properties the order in which child configurations have been
+ * added is relevant. To deal with property updates, a so-called in-memory
+ * configuration is used. Per default, such a configuration is created
+ * automatically. All property writes target this special configuration. There
+ * are constructors which allow you to provide a specific in-memory
+ * configuration. If used that way, the in-memory configuration is always the
+ * last one in the list of child configurations. This means that for query
+ * operations all other configurations take precedence.
+ * 
+ * Alternatively it is possible to mark a child configuration as in-memory
+ * configuration when it is added. In this case the treatment of the in-memory
+ * configuration is slightly different: it remains in the list of child
+ * configurations at the position it was added, i.e. its priority for property
+ * queries can be defined by adding the child configurations in the correct order.
+ */
+public class CompositeConfiguration extends AbstractConfiguration implements Cloneable {//{{{
+	private List<Configuration> configList = new LinkedList<Configuration>();
+
+	/** Inserted as first so any setProperty() override anything else added. */
+	private Configuration inMemoryConfiguration;
+	/** Stores a flag whether the current in-memory configuration is also a child configuration. */
+	private boolean inMemoryConfigIsChild;
+
+	public CompositeConfiguration() { clear(); }
+
+	/** Creates a CompositeConfiguration object with a specified in-memory configuration. 
+	 * This configuration will store any changes made to the CompositeConfiguration. 
+	 * Note: Use this constructor if you want to set a special type of in-memory configuration. 
+	 * If you have a configuration which should act as both a child configuration and as 
+	 * in-memory configuration, use addConfiguration(Configuration, boolean) with a value of 
+	 * true instead. */
+	public CompositeConfiguration(Configuration inMemoryConfiguration) {
+		configList.clear();
+		this.inMemoryConfiguration = inMemoryConfiguration;
+		configList.add(inMemoryConfiguration);
+	}
+
+	public CompositeConfiguration(Collection<? extends Configuration> configurations) {
+		this(new BaseConfiguration(), configurations);
+	}
+
+	public CompositeConfiguration(Configuration inMemoryConfiguration,
+			Collection<? extends Configuration> configurations) {
+		this(inMemoryConfiguration);
+		if (configurations != null)
+			for (Configuration c : configurations)
+				addConfiguration(c);
+	}
+
+	public int getNumberOfConfigurations() { return configList.size(); }
+	public Configuration getConfiguration(int index) { return configList.get(index); }
+	public Configuration getInMemoryConfiguration() { return inMemoryConfiguration; }
+	public void addConfiguration(Configuration config) { addConfiguration(config, false); }
+
+	/** Adds a child configuration and optionally makes it the <em>in-memory
+	 * configuration</em>. This means that all future property write operations
+	 * are executed on this configuration. Note that the current in-memory
+	 * configuration is replaced by the new one. If it was created automatically
+	 * or passed to the constructor, it is removed from the list of child
+	 * configurations! Otherwise, it stays in the list of child configurations
+	 * at its current position, but it passes its role as in-memory
+	 * configuration to the new one. */
+	public void addConfiguration(Configuration config, boolean asInMemory) {
+		if (!configList.contains(config)) {
+			if (asInMemory) {
+				replaceInMemoryConfiguration(config);
+				inMemoryConfigIsChild = true;
+			}
+
+			if (!inMemoryConfigIsChild) {
+				// As the inMemoryConfiguration contains all manually added
+				// keys, we must make sure that it is always last. "Normal", non
+				// composed configurations add their keys at the end of the
+				// configuration and we want to mimic this behavior.
+				configList.add(configList.indexOf(inMemoryConfiguration), config);
+			} else {
+				// However, if the in-memory configuration is a regular child,
+				// only the order in which child configurations are added is relevant
+				configList.add(config);
+			}
+
+			if (config instanceof AbstractConfiguration) {
+				((AbstractConfiguration) config)
+						.setThrowExceptionOnMissing(isThrowExceptionOnMissing());
+			}
+		}
+	}
+
+	public void removeConfiguration(Configuration config) {
+		// Make sure that you can't remove the inMemoryConfiguration
+		if (!config.equals(inMemoryConfiguration))
+			configList.remove(config);
+	}
+
+	private void replaceInMemoryConfiguration(Configuration config) {
+		if (!inMemoryConfigIsChild)
+			configList.remove(inMemoryConfiguration);// remove current in-memory configuration
+		inMemoryConfiguration = config;
+	}
+
+
+	/** Removes all child configurations and reinitializes the in-memory configuration. 
+	 * Attention: A new in-memory configuration is created; the old one is lost. */
+	@Override public void clear() {
+		configList.clear();
+		// recreate the in memory configuration
+		BaseConfiguration bc = new BaseConfiguration();
+		bc.setThrowExceptionOnMissing(isThrowExceptionOnMissing());
+		bc.setListDelimiter(getListDelimiter());
+		bc.setDelimiterParsingDisabled(isDelimiterParsingDisabled());
+		inMemoryConfiguration = bc;
+		configList.add(inMemoryConfiguration);
+		inMemoryConfigIsChild = false;
+	}
+
+	@Override protected void addPropertyDirect(String key, Object token) {
+		inMemoryConfiguration.addProperty(key, token);
+	}
+
+	@Override protected void clearPropertyDirect(String key) {
+		for (Configuration config : configList)
+			config.clearProperty(key);
+	}
+
+	public Object getProperty(String key) {
+		for (Configuration config : configList)
+			if (config.containsKey(key)) 
+				return config.getProperty(key);
+		return null;
+	}
+
+	public Iterator<String> getKeys() {
+		Set<String> keys = new LinkedHashSet<String>();
+		for (Configuration config : configList)
+			for (Iterator<String> it = config.getKeys(); it.hasNext();)
+				keys.add(it.next());
+		return keys.iterator();
+	}
+
+	@Override public Iterator<String> getKeys(String key) {
+		Set<String> keys = new LinkedHashSet<String>();
+		for (Configuration config : configList)
+			for (Iterator<String> it = config.getKeys(key); it.hasNext();)
+				keys.add(it.next());
+		return keys.iterator();
+	}
+
+	public boolean isEmpty() {
+		for (Configuration config : configList)
+			if (!config.isEmpty())
+				return false;
+		return true;
+	}
+
+	public boolean containsKey(String key) {
+		for (Configuration config : configList)
+			if (config.containsKey(key))
+				return true;
+		return false;
+	}
+
+	@Override public List<Object> getList(String key, List<?> defaultValue) {
+		List<Object> list = new ArrayList<Object>();
+
+		// add all elements from the first configuration containing the requested key
+		Iterator<Configuration> it = configList.iterator();
+		while (it.hasNext() && list.isEmpty()) {
+			Configuration config = it.next();
+			if (config != inMemoryConfiguration && config.containsKey(key)) {
+				appendListProperty(list, config, key);
+			}
+		}
+
+		// add all elements from the in memory configuration
+		appendListProperty(list, inMemoryConfiguration, key);
+
+		if (list.isEmpty())
+			return (List<Object>) defaultValue;
+
+		ListIterator<Object> lit = list.listIterator();
+		while (lit.hasNext())
+			lit.set(interpolate(lit.next()));
+
+		return list;
+	}
+
+	@Override public String[] getStringArray(String key) {
+		List<Object> list = getList(key);
+		String[] tokens = new String[list.size()];
+		for (int i = 0; i < tokens.length; i++)
+			tokens[i] = String.valueOf(list.get(i));
+		return tokens;
+	}
+
+
+	/** Sets a flag whether added values for string properties should be checked
+	 * for the list delimiter. This implementation ensures that the in memory
+	 * configuration is correctly initialized.  */
+	@Override public void setDelimiterParsingDisabled(boolean delimiterParsingDisabled) {
+		if (inMemoryConfiguration instanceof AbstractConfiguration) {
+			((AbstractConfiguration) inMemoryConfiguration).setDelimiterParsingDisabled(delimiterParsingDisabled);
+		}
+		super.setDelimiterParsingDisabled(delimiterParsingDisabled);
+	}
+
+	@Override public void setListDelimiter(char listDelimiter) {
+		if (inMemoryConfiguration instanceof AbstractConfiguration) {
+			((AbstractConfiguration) inMemoryConfiguration).setListDelimiter(listDelimiter);
+		}
+		super.setListDelimiter(listDelimiter);
+	}
+
+	/**
+	 * Returns the configuration source, in which the specified key is defined. 
+	 * This method will iterate over all existing child configurations and check 
+	 * whether they contain the specified key. The following constellations are possible:
+	 * - If exactly one child configuration contains the key, this configuration is 
+	 *   returned as the source configuration. This may be the in memory configuration 
+	 *   (this has to be explicitly checked by the calling application).
+	 * - If none of the child configurations contain the key, null is returned.
+	 * - If the key is contained in multiple child configurations or if the key is null, 
+	 *   a IllegalArgumentException is thrown. In this case the source configuration 
+	 *   cannot be determined. */
+	public Configuration getSource(String key) {
+		Configuration source = null;
+		for (Configuration conf : configList) {
+			if (conf.containsKey(key)) {
+				if (source != null) {
+					throw new IllegalArgumentException(key + " is defined by multiple sources!");
+				}
+				source = conf;
+			}
+		}
+		return source;
+	}
+
+	private static void appendListProperty(List<Object> dest, Configuration config, String key) {
+		Object value = config.getProperty(key);
+		if (value != null)
+			if (value instanceof Collection)
+				dest.addAll((Collection<?>) value);
+			else 
+				dest.add(value);
+	}
+}//}}}
+
+
+* Eclipse Preferences							{{{1
+1. Preferences
+1.1. Overview
+Eclipse represents user settings via preferences. Eclipse preferences (org.osgi.service.prefs.Preferences) are very similar to java.utils.prefs.Preferences with some support of additional features. See Java Preferences for an overview of java.utils.prefs.Preferences. 
+
+Preferences are key / values pairs where the key is an arbitrary name for the preference. The value can be a boolean, string, int of another primitive type. Preferences are received and saved by get and put methods while the get methods also supply a default value in case the preferences is not yet set.
+
+Eclipse Preferences use the Eclipse framework to save and retrieve data hence making is easy to re-use this.
+
+The runtime defines three so-called scopes. The scope defines how the preference data is stored and how is is changeable. 
+
+    * Instance scope: If the user runs the same program twice the settings between the two programs may be different. 
+
+    * Configuration scope: If the user runs the same program twice then the settings between the two programs are the same. 
+
+    * Default scope: Default values which can not be changed. Supplied via configuration files in plugins and product definitions. 
+
+
+1.2. Preference Page
+Preference Pages allow to modify / display the user / system settings. They have to implement the extension point org.eclipse.ui.preferencePages.
+
+The class must implement IWorkbenchPreferencePage and must have a non-parameter constructor. The class PreferencePage or one of its subclasses can get extended, a good template is usually FieldEditor PreferencePage.
+
+1.3. Pre-requisite for the examples
+The following assumes that you know how to create simple Eclipse RCP applications and that you know how to create commands and add them to the menu. Please see Eclipse RCP 
+
+for information on this. Eclipse Commands provides additional information around Eclipse Commands. 
+
+2. Using preferences
+The following will create three commands. One of set the preference values. The next will display the values and the last will clear the preference values.
+
+Create a new project "de.vogella.preferences.test" (see Eclipse RCP Tutorial for details). Use the "Hello RCP" as a template. 
+
+Create the following commands with the following default handler. Add these commands to the menu. 
+
+Table 1. Commands 
+
+Command Default Handler Description 
+de.vogella.preferences.test.setPreferences de.vogella.preferences.test.handler.SetPreferences Sets the initial values of Preferences 
+de.vogella.preferences.test.deletePreferences de.vogella.preferences.test.handler.DeletePreferences Deletes the preference values 
+de.vogella.preferences.test.showPreferences de.vogella.preferences.test.handler.ShowPreferences Displays the preference values 
+
+
+
+
+Create the following coding in the default handler.
+
+
+			
+package de.vogella.preferences.test.handler;
+
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
+
+public class SetPreferences extends AbstractHandler {
+
+	public Object execute(ExecutionEvent event) throws ExecutionException {
+		// This would be using instance scope
+		// Preferences preferences = new InstanceScope()
+		// .getNode("de.vogella.preferences.test");
+		// This is using configuration scope
+		Preferences preferences = new ConfigurationScope()
+				.getNode("de.vogella.preferences.test");
+		// This would be using default n scope
+		// Preferences preferences = new DefaultScope()
+		// .getNode(Application.PLUGIN_ID);
+		Preferences sub1 = preferences.node("note1");
+		Preferences sub2 = preferences.node("node2");
+		sub1.put("h1", "Hello");
+		sub1.put("h2", "Hello again");
+		sub2.put("h1", "Moin");
+
+		try {
+			// Forces the application to save the preferences
+			preferences.flush();
+		} catch (BackingStoreException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+}
+
+		
+
+
+			
+package de.vogella.preferences.test.handler;
+
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
+
+public class DeletePreferences extends AbstractHandler {
+
+	@Override
+	public Object execute(ExecutionEvent event) {
+		Preferences preferences = new ConfigurationScope()
+				.getNode("de.vogella.preferences.test");
+		Preferences sub1 = preferences.node("note1");
+		Preferences sub2 = preferences.node("node2");
+		// Delete the existing settings
+		try {
+			sub1.clear();
+			sub2.clear();
+		} catch (BackingStoreException e) {
+			e.printStackTrace();
+		}
+		// Forces the application to save the preferences
+		try {
+			preferences.flush();
+		} catch (BackingStoreException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+}
+
+		
+
+
+			
+package de.vogella.preferences.test.handler;
+
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.handlers.HandlerUtil;
+import org.osgi.service.prefs.Preferences;
+
+public class ShowPreferences extends AbstractHandler {
+	@Override
+	public Object execute(ExecutionEvent event) throws ExecutionException {
+		Shell shell = HandlerUtil.getActiveWorkbenchWindowChecked(event)
+				.getShell();
+		Preferences preferences = new ConfigurationScope()
+				.getNode("de.vogella.preferences.test");
+		Preferences sub1 = preferences.node("note1");
+		Preferences sub2 = preferences.node("node2");
+		MessageDialog.openInformation(shell, "Info", sub1.get("h1", "default"));
+		MessageDialog.openInformation(shell, "Info", sub1.get("h2", "default"));
+		MessageDialog.openInformation(shell, "Info", sub2.get("h1", "default"));
+		return null;
+	}
+}
+
+		
+
+Run and test your program. If you set the preferences and re-start the program the values should still be stored in the application.
+
+3. Preference Page
+3.1. Project
+The following will create an example for preference pages. 
+
+Create a new RCP project "de.vogella.preferences.page" . Use the "Hello RCP" as a template. 
+
+
+TipThe template which we are going to use requires an activator. Make sure you flag the "Generate an activator..." during the project creation.
+
+3.2. Extension Point and Preference Page
+Go to plugin.xml and add extension org.eclipse.ui.preferencePages with the following settings. 
+
+
+
+
+Maintain the following code for your class "MyPreferencePage1". 
+
+
+				
+package de.vogella.preferences.page.perferencepage;
+
+import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.DirectoryFieldEditor;
+import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.RadioGroupFieldEditor;
+import org.eclipse.jface.preference.StringFieldEditor;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPreferencePage;
+
+import de.vogella.preferences.page.Activator;
+
+public class MyPreferencePage1 extends FieldEditorPreferencePage implements
+		IWorkbenchPreferencePage {
+
+	public MyPreferencePage1() {
+		super(GRID);
+
+	}
+
+	public void createFieldEditors() {
+		addField(new DirectoryFieldEditor("PATH", "&Directory preference:",
+				getFieldEditorParent()));
+		addField(new BooleanFieldEditor("BOOLEAN_VALUE",
+				"&An example of a boolean preference", getFieldEditorParent()));
+
+		addField(new RadioGroupFieldEditor("CHOICE",
+				"An example of a multiple-choice preference", 1,
+				new String[][] { { "&Choice 1", "choice1" },
+						{ "C&hoice 2", "choice2" } }, getFieldEditorParent()));
+		addField(new StringFieldEditor("MySTRING1", "A &text preference:",
+				getFieldEditorParent()));
+		addField(new StringFieldEditor("MySTRING2", "A &text preference:",
+				getFieldEditorParent()));
+	}
+
+	@Override
+	public void init(IWorkbench workbench) {
+		setPreferenceStore(Activator.getDefault().getPreferenceStore());
+		setDescription("A demonstration of a preference page implementation");
+	}
+}
+
+			
+
+3.3. Commands
+To display the preference page you can re-use an existing Eclipse command.
+
+Add the standard Eclipse command "org.eclipse.ui.window.preferences" to your menu. This will show the preference dialog. See Eclipse Commands for how to add a standard command to your menu. 
+
+Run the application. Now you can select your preference page via the menu.
+
+
+
+
+Create a command "showPreferenceValues" with a default handler. Add this command also to your menu. Maintain the following coding for the default handler. 
+
+
+				
+package de.vogella.preferences.page.handler;
+
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.handlers.HandlerUtil;
+
+import de.vogella.preferences.page.Activator;
+
+public class ShowPreferenceValues extends AbstractHandler {
+
+	@Override
+	public Object execute(ExecutionEvent event) throws ExecutionException {
+		Shell shell = HandlerUtil.getActiveWorkbenchWindowChecked(event)
+				.getShell();
+		String myPrefString = Activator.getDefault().getPreferenceStore()
+				.getString("MySTRING1");
+		MessageDialog.openInformation(shell, "Info", myPrefString);
+		Boolean myPrefBoolean = Activator.getDefault().getPreferenceStore()
+				.getBoolean("BOOLEAN_VALUE");
+		MessageDialog.openInformation(shell, "Info", myPrefBoolean.toString());
+		// I assume you get the rest by yourself
+		return null;
+	}
+
+}
+
+			
+
+This command demonstrates how to access preferences values from the preferencePage. Try to change values in the preference page, restart the application. The values should still be the changed ones. 
+
+
+Interface IPreferenceStore
+{
+void addPropertyChangeListener(IPropertyChangeListener listener) 
+           Adds a property change listener to this preference store.  
+ boolean contains(String name) 
+          Returns whether the named preference is known to this preference store. 
+ void firePropertyChangeEvent(String name, Object oldValue, Object newValue) 
+          Fires a property change event corresponding to a change to the current value of the preference with the given name.  
+
+String getDefaultString(String name) 
+          Returns the default value for the string-valued preference with the given name.  
+
+String getString(String name) 
+          Returns the current value of the string-valued preference with the given name.  
+
+boolean isDefault(String name) 
+          Returns whether the current value of the preference with the given name has the default value. 
+ boolean needsSaving() 
+          Returns whether the current values in this property store require saving. 
+ void putValue(String name, String value) 
+          Sets the current value of the preference with the given name to the given string value without sending a property change.  
+ void removePropertyChangeListener(IPropertyChangeListener listener) 
+          Removes the given listener from this preference store.  
+
+void setDefault(String name, String defaultObject) 
+          Sets the default value for the string-valued preference with the given name.  
+
+void setToDefault(String name) 
+          Sets the current value of the preference with the given name back to its default value.  
+
+ void setValue(String name, String value) 
+          Sets the current value of the string-valued preference with the given name.  
+
+}
+
+Interface IPreferencePage
+{
+     Point computeSize() 
+	      Computes a size for this page's UI component. 
+     boolean isValid() 
+	      Returns whether this dialog page is in a valid state. 
+     boolean okToLeave() 
+	      Checks whether it is alright to leave this page. 
+     boolean performCancel() 
+	      Notifies that the container of this preference page has been canceled. 
+     boolean performOk() 
+	      Notifies that the OK button of this page's container has been pressed. 
+     void setContainer(IPreferencePageContainer preferencePageContainer) 
+	      Sets or clears the container of this page. 
+     void setSize(Point size) 
+	      Sets the size of this page's UI component. 
+}
+
+Abstract Class PreferencePage
+{
+     void applyData(Object data) 
+	      Apply the data to the receiver.  
+    protected  void applyDialogFont(Composite composite) 
+	      Apply the dialog font to the composite and it's children if it is set.  
+     Point computeSize() 
+	      Computes the size for this page's UI control.  
+    protected  void contributeButtons(Composite parent) 
+	      Contributes additional buttons to the given composite.  
+    protected abstract  Control createContents(Composite parent) 
+	      Creates and returns the SWT control for the customized body of this preference page under the given parent composite.  
+     void createControl(Composite parent) 
+	      The PreferencePage implementation of this IDialogPage method creates a description label and button bar for the page.  
+    protected  Label createDescriptionLabel(Composite parent) 
+	      Creates and returns an SWT label under the given composite. 
+    protected  Composite createNoteComposite(Font font, Composite composite, String title, String message) 
+	      Creates a composite with a highlighted Note entry and a message text.  
+    protected  Point doComputeSize() 
+	      Computes the size needed by this page's UI control.  
+    protected  IPreferenceStore doGetPreferenceStore() 
+	      Returns the preference store of this preference page.  
+    protected  Button getApplyButton() 
+	      Returns the Apply button. 
+     IPreferencePageContainer getContainer() 
+	      Returns the container of this page. 
+    protected  Button getDefaultsButton() 
+	      Returns the Restore Defaults button. 
+     IPreferenceStore getPreferenceStore() 
+	      Returns the preference store of this preference page. 
+     boolean isValid() 
+	      The preference page implementation of an IPreferencePage method returns whether this preference page is valid.  
+    protected  void noDefaultAndApplyButton() 
+	      Suppresses creation of the standard Default and Apply buttons for this page.  
+     boolean okToLeave() 
+	      The PreferencePage implementation of this IPreferencePage method returns true if the page is valid. 
+    protected  void performApply() 
+	      Performs special processing when this page's Apply button has been pressed.  
+     boolean performCancel() 
+	      The preference page implementation of an IPreferencePage method performs special processing when this page's Cancel button has been pressed.  
+    protected  void performDefaults() 
+	      Performs special processing when this page's Defaults button has been pressed.  
+     void performHelp() 
+	      Notifies that help has been requested for this dialog page. 
+     boolean performOk() 
+	      Method declared on IPreferencePage.  
+     void setContainer(IPreferencePageContainer container) 
+	      (non-Javadoc) Method declared on IPreferencePage. 
+     void setErrorMessage(String newMessage) 
+	      Sets or clears the error message for this page. 
+     void setMessage(String newMessage, int newType) 
+	      Sets the message for this page with an indication of what type of message it is.  
+     void setPreferenceStore(IPreferenceStore store) 
+	      Sets the preference store for this preference page.  
+     void setSize(Point uiSize) 
+	      Sets the size of this page's UI component. 
+     void setTitle(String title) 
+	      The PreferencePage implementation of this IDialogPage method extends the DialogPage implementation to update the preference page container title.  
+     void setValid(boolean b) 
+	      Sets whether this page is valid.  
+     String toString() 
+	      Returns a string suitable for debugging purpose only. 
+    protected  void updateApplyButton() 
+	      Updates the enabled state of the Apply button to reflect whether this page is valid. 
+
+}
+
+* XC implementation							{{{1
+interface IPreferencePage
+{
+}
