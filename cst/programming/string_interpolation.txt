@@ -1,0 +1,575 @@
+String interpolation
+From Wikipedia, the free encyclopedia
+In computer programming, string interpolation (or variable interpolation, variable substitution, or variable expansion) is the process of evaluating a string literal containing one or more placeholders, yielding a result in which the placeholders are replaced with their corresponding values. It is a form of simple template processing[1] or, in formal terms, a form of quasi-quotation (or logic substitution interpretation). String interpolation allows easier and more intuitive string formatting and content-specification compared with string concatenation.[2]
+String interpolation is common in many programming languages which make heavy use of string representations of data, such as Groovy, Perl, PHP, Python, Ruby, Scala, and Swift, and most Unix shells. Two modes of literal expression are usually offered: one with interpolation enabled, the other without (termed raw string). Placeholders are usually represented by a bare or a named sigil (typically $ or %), e.g. $placeholder or %123. Expansion of the string usually occurs at run time.
+ariations
+Some languages do not offer string interpolation, instead offering a standard function where one parameter is the printf format string, and other(s) provide the values for each placeholder.
+Ruby uses the # symbol for interpolation, and allows interpolating any expression, not only variables. Other languages may support more advanced interpolation with a special formatting function, such as printf, in which the first argument, the format, specifies the pattern in which the remaining arguments are substituted.
+Algorithms
+There are two main types of expand variable algorithms for variable interpolation:[3]
+Replace and expand placeholders: creating a new string from the original one, by find-replace operations. Find variable-reference (placeholder), replace it by its variable-value. This algorithm offers no cache strategy.
+Split and join string: splitting the string into an array, and merging it with the corresponding array of values; then join items by concatenation. The split string can be cached to reuse.
+Security issues
+String interpolation, like string concatenation, may lead to security problems. If user input data is improperly escaped or filtered, the system will be exposed to SQL injection, script injection, XML External Entity Injection (XXE), and cross-site scripting (XSS) attacks.[4]
+An SQL injection example:
+query = "SELECT x, y, z FROM Table WHERE id='$id' "
+If $id is replaced with "'; DELETE FROM Table; SELECT * FROM Table WHERE id='", executing this query will wipe out all the data in Table.
+
+// -- Apache Commons Lang 2.4 --
+package org.apache.commons.lang.text;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/** Substitutes variables within a string by values.
+ * This class takes a piece of text and substitutes all the variables within it.
+ * The default definition of a variable is <code>${variableName}</code>.
+ * The prefix and suffix can be changed via constructors and set methods.
+ * Variable values are typically resolved from a map, but could also be resolved
+ * from system properties, or by supplying a custom variable resolver.
+ * The simplest example is to use this class to replace Java System properties. For example:
+ * 	StrSubstitutor.replaceSystemProperties(
+ *      "You are running with java.version = ${java.version} and os.name = ${os.name}.");
+ * Typical usage of this class follows the following pattern: First an instance is created
+ * and initialized with the map that contains the values for the available variables.
+ * If a prefix and/or suffix for variables should be used other than the default ones,
+ * the appropriate settings can be performed. After that the <code>replace()</code>
+ * method can be called passing in the source text for interpolation. In the returned
+ * text all variable references (as long as their values are known) will be resolved.
+ * The following example demonstrates this:
+ * 	 Map valuesMap = HashMap();
+ * 	 valuesMap.put("animal", "quick brown fox");
+ * 	 valuesMap.put("target", "lazy dog");
+ * 	 String templateString = "The ${animal} jumped over the ${target}.";
+ * 	 StrSubstitutor sub = new StrSubstitutor(valuesMap);
+ * 	 String resolvedString = sub.replace(templateString);
+ * yielding:
+ *      The quick brown fox jumped over the lazy dog.
+ * In addition to this usage pattern there are some static convenience methods that
+ * cover the most common use cases. These methods can be used without the need of
+ * manually creating an instance. However if multiple replace operations are to be
+ * performed, creating and reusing an instance of this class will be more efficient.
+ * Variable replacement works in a recursive way. Thus, if a variable value contains
+ * a variable then that variable will also be replaced. Cyclic replacements are
+ * detected and will cause an exception to be thrown.
+ * Sometimes the interpolation's result must contain a variable prefix. As an example
+ * take the following source text:
+ *  	The variable ${${name}} must be used.
+ * Here only the variable's name refered to in the text should be replaced resulting
+ * in the text (assuming that the value of the <code>name</code> variable is <code>x</code>):
+ * 	The variable ${x} must be used.
+ * To achieve this effect there are two possibilities: Either set a different prefix
+ * and suffix for variables which do not conflict with the result text you want to
+ * produce. The other possibility is to use the escape character, by default '$'.
+ * If this character is placed before a variable reference, this reference is ignored
+ * and won't be replaced. For example:
+ * 	The variable $${${name}} must be used.
+ */
+public class StrSubstitutor {
+    public static final char DEFAULT_ESCAPE = '$';
+    public static final StrMatcher DEFAULT_PREFIX = StrMatcher.stringMatcher("${");
+    public static final StrMatcher DEFAULT_SUFFIX = StrMatcher.stringMatcher("}");
+
+    /** the escape character used for escaping variable references. 
+     * If this character is placed before a variable reference in the source
+     * text, this variable will be ignored. Disable escaping if 0 */
+    private char escapeChar;
+    /** The variable prefix is the characer or characters that identify the
+     * start of a variable. This prefix is expressed in terms of a matcher
+     * allowing advanced prefix matches.  */
+    private StrMatcher prefixMatcher;
+    /** The variable suffix is the characer or characters that identify the
+     * end of a variable. This suffix is expressed in terms of a matcher
+     * allowing advanced suffix matches. */
+    private StrMatcher suffixMatcher;
+
+    /** Variable resolution is delegated to an implementor of VariableResolver. */
+    private StrLookup variableResolver;
+
+    // -- convenient static methods --
+    /** Replaces all the occurrences of variables in the given source object with
+     * their matching values from the map. */
+    public static String replace(Object source, Map valueMap, String prefix, String suffix) {
+        return new StrSubstitutor(valueMap, prefix, suffix).replace(source);
+    }
+    public static String replace(Object source, Map valueMap) {
+        return new StrSubstitutor(valueMap).replace(source);
+    }
+
+    /** Replaces all the occurrences of variables in the given source object with
+     * their matching values from the system properties.  */
+    public static String replaceSystemProperties(Object source) {
+        return new StrSubstitutor(StrLookup.systemPropertiesLookup()).replace(source);
+    }
+
+    // -- constructors --
+    public StrSubstitutor() {
+        this((StrLookup) null, DEFAULT_PREFIX, DEFAULT_SUFFIX, DEFAULT_ESCAPE);
+    }
+    public StrSubstitutor(Map valueMap) {
+        this(StrLookup.mapLookup(valueMap), DEFAULT_PREFIX, DEFAULT_SUFFIX, DEFAULT_ESCAPE);
+    }
+    public StrSubstitutor(Map valueMap, String prefix, String suffix) {
+        this(StrLookup.mapLookup(valueMap), prefix, suffix, DEFAULT_ESCAPE);
+    }
+    public StrSubstitutor(Map valueMap, String prefix, String suffix, char escape) {
+        this(StrLookup.mapLookup(valueMap), prefix, suffix, escape);
+    }
+    public StrSubstitutor(StrLookup variableResolver) {
+        this(variableResolver, DEFAULT_PREFIX, DEFAULT_SUFFIX, DEFAULT_ESCAPE);
+    }
+    public StrSubstitutor(StrLookup variableResolver, String prefix, String suffix, char escape) {
+        this.setVariableResolver(variableResolver);
+        this.setVariablePrefix(prefix);
+        this.setVariableSuffix(suffix);
+        this.setEscapeChar(escape);
+    }
+    public StrSubstitutor(StrLookup variableResolver, StrMatcher prefixMatcher, 
+	    StrMatcher suffixMatcher, char escape) {
+        this.setVariableResolver(variableResolver);
+        this.setVariablePrefixMatcher(prefixMatcher);
+        this.setVariableSuffixMatcher(suffixMatcher);
+        this.setEscapeChar(escape);
+    }
+
+    // -- Immutable replace() methods --
+    /** Replaces all the occurrences of variables with their matching values
+     * from the resolver using the given source string as a template.
+     * @param source  the string to replace in, null returns null
+     * @return the result of the replace operation */
+    public String replace(String source) {
+        if (source == null) { return null; }
+        StrBuilder buf = new StrBuilder(source);
+        if (substitute(buf, 0, source.length()) == false) {
+            return source;
+        }
+        return buf.toString();
+    }
+
+    /** Only the specified portion of the string will be processed.
+     * The rest of the string is not processed, and is not returned.  */
+    public String replace(String source, int offset, int length) {
+        if (source == null) { return null; }
+        StrBuilder buf = new StrBuilder(length).append(source, offset, length);
+        if (substitute(buf, 0, length) == false) {
+            return source.substring(offset, offset + length);
+        }
+        return buf.toString();
+    }
+
+    public String replace(char[] source) {
+        if (source == null) { return null; }
+        StrBuilder buf = new StrBuilder(source.length).append(source);
+        substitute(buf, 0, source.length);
+        return buf.toString();
+    }
+
+    public String replace(char[] source, int offset, int length) {
+        if (source == null) { return null; }
+        StrBuilder buf = new StrBuilder(length).append(source, offset, length);
+        substitute(buf, 0, length);
+        return buf.toString();
+    }
+
+    public String replace(StringBuffer source) {
+        if (source == null) { return null; }
+        StrBuilder buf = new StrBuilder(source.length()).append(source);
+        substitute(buf, 0, buf.length());
+        return buf.toString();
+    }
+
+    public String replace(StringBuffer source, int offset, int length) {
+        if (source == null) { return null; }
+        StrBuilder buf = new StrBuilder(length).append(source, offset, length);
+        substitute(buf, 0, length);
+        return buf.toString();
+    }
+
+    public String replace(StrBuilder source) {
+        if (source == null) { return null; }
+        StrBuilder buf = new StrBuilder(source.length()).append(source);
+        substitute(buf, 0, buf.length());
+        return buf.toString();
+    }
+
+    public String replace(StrBuilder source, int offset, int length) {
+        if (source == null) { return null; }
+        StrBuilder buf = new StrBuilder(length).append(source, offset, length);
+        substitute(buf, 0, length);
+        return buf.toString();
+    }
+
+    public String replace(Object source) {
+        if (source == null) { return null; }
+        StrBuilder buf = new StrBuilder().append(source);
+        substitute(buf, 0, buf.length());
+        return buf.toString();
+    }
+
+    // -- Mutable replaceIn() methods --
+    /** The buffer is updated with the result. */
+    public boolean replaceIn(StringBuffer source) {
+        if (source == null) { return false; }
+        return replaceIn(source, 0, source.length());
+    }
+
+    public boolean replaceIn(StringBuffer source, int offset, int length) {
+        if (source == null) { return false; }
+        StrBuilder buf = new StrBuilder(length).append(source, offset, length);
+        if (substitute(buf, 0, length) == false) {
+            return false;
+        }
+        source.replace(offset, offset + length, buf.toString());
+        return true;
+    }
+
+    public boolean replaceIn(StrBuilder source) {
+        if (source == null) { return false; }
+        return substitute(source, 0, source.length());
+    }
+
+    public boolean replaceIn(StrBuilder source, int offset, int length) {
+        if (source == null) { return false; }
+        return substitute(source, offset, length);
+    }
+
+    // -- Internal method that substitutes the variables. --
+    /** Most users of this class do not need to call this method. This method will
+     * be called automatically by another (public) method.
+     * Writers of subclasses can override this method if they need access to
+     * the substitution process at the start or end. */
+    protected boolean substitute(StrBuilder buf, int offset, int length) {
+        return substitute(buf, offset, length, null) > 0;
+    }
+
+    /** Recursive handler for multiple levels of interpolation. This is the main
+     * interpolation method, which resolves the values of all variable references
+     * contained in the passed in text.
+     * @param buf  the string builder to substitute into, not null
+     * @param offset  the start offset within the builder, must be valid
+     * @param length  the length within the builder to be processed, must be valid
+     * @param priorVariables  the stack keeping track of the replaced variables, may be null
+     * @return the length change that occurs, unless priorVariables is null
+     *  when the int represents a boolean flag as to whether any change occurred.
+     */
+    private int substitute(StrBuilder buf, int offset, int length, List priorVariables) {
+        StrMatcher prefixMatcher = getVariablePrefixMatcher();
+        StrMatcher suffixMatcher = getVariableSuffixMatcher();
+        char escape = getEscapeChar();
+        
+        boolean top = (priorVariables == null);
+        boolean altered = false;
+        int lengthChange = 0;
+        char[] chars = buf.buffer;
+        int bufEnd = offset + length;
+        int pos = offset;
+        while (pos < bufEnd) {
+            int startMatchLen = prefixMatcher.isMatch(chars, pos, offset, bufEnd);
+            if (startMatchLen == 0) {
+                pos++;
+            } else {
+                // found variable start marker
+                if (pos > offset && chars[pos - 1] == escape) {
+                    // escaped
+                    buf.deleteCharAt(pos - 1);
+                    chars = buf.buffer;  // in case buffer was altered
+                    lengthChange--;
+                    altered = true;
+                    bufEnd--;
+                } else {
+                    // find suffix
+                    int startPos = pos;
+                    pos += startMatchLen;
+                    int endMatchLen = 0;
+                    while (pos < bufEnd) {
+                        endMatchLen = suffixMatcher.isMatch(chars, pos, offset, bufEnd);
+                        if (endMatchLen == 0) {
+                            pos++;
+                        } else {
+                            // found variable end marker
+                            String varName = new String(chars, startPos + startMatchLen, 
+                                                        pos - startPos - startMatchLen);
+                            pos += endMatchLen;
+                            int endPos = pos;
+                            
+                            // on the first call initialize priorVariables
+                            if (priorVariables == null) {
+                                priorVariables = new ArrayList();
+                                priorVariables.add(new String(chars, offset, length));
+                            }
+                            
+                            // handle cyclic substitution
+                            checkCyclicSubstitution(varName, priorVariables);
+                            priorVariables.add(varName);
+                            
+                            // resolve the variable
+                            String varValue = resolveVariable(varName, buf, startPos, endPos);
+                            if (varValue != null) {
+                                // recursive replace
+                                int varLen = varValue.length();
+                                buf.replace(startPos, endPos, varValue);
+                                altered = true;
+                                int change = substitute(buf, startPos, varLen, priorVariables);
+                                change = change + (varLen - (endPos - startPos));
+                                pos += change;
+                                bufEnd += change;
+                                lengthChange += change;
+                                chars = buf.buffer;  // in case buffer was altered
+                            }
+                            
+                            // remove variable from the cyclic stack
+                            priorVariables.remove(priorVariables.size() - 1);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (top) {
+            return (altered ? 1 : 0);
+        }
+        return lengthChange;
+    }
+
+    /** Checks if the specified variable is already in the stack (list) of variables.
+     * @param varName  the variable name to check
+     * @param priorVariables  the list of prior variables */
+    private void checkCyclicSubstitution(String varName, List priorVariables) {
+        if (priorVariables.contains(varName) == false) {
+            return;
+        }
+        StrBuilder buf = new StrBuilder(256);
+        buf.append("Infinite loop in property interpolation of ");
+        buf.append(priorVariables.remove(0));
+        buf.append(": ");
+        buf.appendWithSeparators(priorVariables, "->");
+        throw new IllegalStateException(buf.toString());
+    }
+
+    /** Internal method that resolves the value of a variable.
+     * Most users of this class do not need to call this method. This method is
+     * called automatically by the substitution process.
+     * Writers of subclasses can override this method if they need to alter
+     * how each substitution occurs. The method is passed the variable's name
+     * and must return the corresponding value. This implementation uses the
+     * {@link #getVariableResolver()} with the variable's name as the key. */
+    protected String resolveVariable(String variableName, StrBuilder buf, int startPos, int endPos) {
+        StrLookup resolver = getVariableResolver();
+        if (resolver == null) {
+            return null;
+        }
+        return resolver.lookup(variableName);
+    }
+
+    public char getEscapeChar() { return this.escapeChar; }
+    public void setEscapeChar(char escapeCharacter) { this.escapeChar = escapeCharacter; }
+
+    public StrMatcher getVariablePrefixMatcher() { return prefixMatcher; }
+    public StrSubstitutor setVariablePrefixMatcher(StrMatcher prefixMatcher) {
+        this.prefixMatcher = prefixMatcher;
+        return this;
+    }
+    public StrSubstitutor setVariablePrefix(char prefix) {
+        return setVariablePrefixMatcher(StrMatcher.charMatcher(prefix));
+    }
+    public StrSubstitutor setVariablePrefix(String prefix) {
+        return setVariablePrefixMatcher(StrMatcher.stringMatcher(prefix));
+    }
+
+    public StrMatcher getVariableSuffixMatcher() {
+        return suffixMatcher;
+    }
+    public StrSubstitutor setVariableSuffixMatcher(StrMatcher suffixMatcher) {
+        this.suffixMatcher = suffixMatcher;
+        return this;
+    }
+    public StrSubstitutor setVariableSuffix(char suffix) {
+        return setVariableSuffixMatcher(StrMatcher.charMatcher(suffix));
+    }
+    public StrSubstitutor setVariableSuffix(String suffix) {
+        return setVariableSuffixMatcher(StrMatcher.stringMatcher(suffix));
+    }
+
+    public StrLookup getVariableResolver() { return this.variableResolver; }
+    public void setVariableResolver(StrLookup variableResolver) {
+        this.variableResolver = variableResolver;
+    }
+}
+
+import java.util.Map;
+
+/** Lookup a String key to a String value.
+ * This class represents the simplest form of a string to string map.
+ * It has a benefit over a map in that it can create the result on
+ * demand based on the key.
+ * This class comes complete with various factory methods.
+ * If these do not suffice, you can subclass and implement your own matcher.
+ * For example, it would be possible to implement a lookup that used the
+ * key as a primary key, and looked up the value on demand from the database
+ * Or, a numeric based implementation could be created that treats the key
+ * as an integer, increments the value and return the result as a string -
+ * converting 1 to 2, 15 to 16 etc. */
+public abstract class StrLookup {
+    /** Lookup that always returns null. */
+    private static final StrLookup NONE_LOOKUP;
+    public static StrLookup noneLookup() { return NONE_LOOKUP; }
+    /** Lookup that uses System properties. 
+     * If a security manager blocked access to system properties, then null will
+     * be returned from every lookup.
+     * If a null key is used, this lookup will throw a NullPointerException. */
+    private static final StrLookup SYSTEM_PROPERTIES_LOOKUP;
+    public static StrLookup systemPropertiesLookup() { return SYSTEM_PROPERTIES_LOOKUP; }
+    static {
+        NONE_LOOKUP = new MapStrLookup(null);
+        StrLookup lookup = null;
+        try {
+            lookup = new MapStrLookup(System.getProperties());
+        } catch (SecurityException ex) {
+            lookup = NONE_LOOKUP;
+        }
+        SYSTEM_PROPERTIES_LOOKUP = lookup;
+    }
+
+    public static StrLookup mapLookup(Map map) { return new MapStrLookup(map); }
+    protected StrLookup() { super(); }
+    public abstract String lookup(String key);
+
+    /** Lookup imnplementation that uses a Map.  */
+    static class MapStrLookup extends StrLookup {
+        private final Map map;        /** Map keys are variable names and value. */
+        MapStrLookup(Map map) { this.map = map; }
+
+        /** NOTE: The map result object is converted to a string using toString(). */
+        public String lookup(String key) {
+            if (map == null) {
+                return null;
+            }
+            Object obj = map.get(key);
+            if (obj == null) {
+                return null;
+            }
+            return obj.toString();
+        }
+    }
+}
+
+import java.util.Arrays;
+
+/** A matcher class that can be queried to determine if a character array portion matches.
+ * This class comes complete with various factory methods.
+ * If these do not suffice, you can subclass and implement your own matcher. */
+public abstract class StrMatcher {
+    private static final StrMatcher COMMA_MATCHER = new CharMatcher(',');
+    private static final StrMatcher TAB_MATCHER = new CharMatcher('\t');
+    private static final StrMatcher SPACE_MATCHER = new CharMatcher(' ');
+    private static final StrMatcher SINGLE_QUOTE_MATCHER = new CharMatcher('\'');
+    private static final StrMatcher DOUBLE_QUOTE_MATCHER = new CharMatcher('"');
+    private static final StrMatcher QUOTE_MATCHER = new CharSetMatcher("'\"".toCharArray());
+    private static final StrMatcher NONE_MATCHER = new NoMatcher();
+    /** Matches the same characters as StringTokenizer, namely space, tab, newline, formfeed. */
+    private static final StrMatcher SPLIT_MATCHER = new CharSetMatcher(" \t\n\r\f".toCharArray());
+    /** Matches the String trim() whitespace characters. */
+    private static final StrMatcher TRIM_MATCHER = new TrimMatcher();
+
+    public static StrMatcher commaMatcher() { return COMMA_MATCHER; }
+    public static StrMatcher tabMatcher() { return TAB_MATCHER; }
+    public static StrMatcher spaceMatcher() { return SPACE_MATCHER; }
+    public static StrMatcher splitMatcher() { return SPLIT_MATCHER; }
+    public static StrMatcher trimMatcher() { return TRIM_MATCHER; }
+    public static StrMatcher singleQuoteMatcher() { return SINGLE_QUOTE_MATCHER; }
+    public static StrMatcher doubleQuoteMatcher() { return DOUBLE_QUOTE_MATCHER; }
+    public static StrMatcher quoteMatcher() { return QUOTE_MATCHER; }
+    public static StrMatcher noneMatcher() { return NONE_MATCHER; }
+
+    public static StrMatcher charMatcher(char ch) { return new CharMatcher(ch); }
+
+    public static StrMatcher charSetMatcher(char[] chars) {
+        if (chars == null || chars.length == 0) { return NONE_MATCHER; }
+        if (chars.length == 1) { return new CharMatcher(chars[0]); }
+        return new CharSetMatcher(chars);
+    }
+
+    public static StrMatcher charSetMatcher(String chars) {
+        if (chars == null || chars.length() == 0) { return NONE_MATCHER; }
+        if (chars.length() == 1) { return new CharMatcher(chars.charAt(0)); }
+        return new CharSetMatcher(chars.toCharArray());
+    }
+
+    public static StrMatcher stringMatcher(String str) {
+        if (str == null || str.length() == 0) { return NONE_MATCHER; }
+        return new StringMatcher(str);
+    }
+
+    protected StrMatcher() { super(); }
+
+    /** Returns the number of matching characters, zero for no match.
+     * This method is called to check for a match.
+     * The parameter <code>pos</code> represents the current position to be checked 
+     * in the string <code>buffer</code> (a character array which must not be changed).
+     * The API guarantees that <code>pos</code> is a valid index for <code>buffer</code>.
+     * The character array may be larger than the active area to be matched.
+     * Only values in the buffer between the specifed indices may be accessed.
+     * The matching code may check one character or many.
+     * It may check characters preceeding <code>pos</code> as well as those
+     * after, so long as no checks exceed the bounds specified.
+     * It must return zero for no match, or a positive number if a match was found.
+     * The number indicates the number of characters that matched.
+     * @param buffer  the text content to match against, do not change
+     * @param pos  the starting position for the match, valid for buffer
+     * @param bufferStart  the first active index in the buffer, valid for buffer
+     * @param bufferEnd  the end index (exclusive) of the active buffer, valid for buffer
+     * @return the number of matching characters, zero for no match */
+    public abstract int isMatch(char[] buffer, int pos, int bufferStart, int bufferEnd);
+    public int isMatch(char[] buffer, int pos) { return isMatch(buffer, pos, 0, buffer.length); }
+
+    /** Class used to define a set of characters for matching purposes. */
+    static final class CharSetMatcher extends StrMatcher {
+        private char[] chars;        /** The set of characters to match. */
+        CharSetMatcher(char chars[]) {
+            super();
+            this.chars = (char[]) chars.clone();
+            Arrays.sort(this.chars);
+        }
+
+        public int isMatch(char[] buffer, int pos, int bufferStart, int bufferEnd) {
+            return Arrays.binarySearch(chars, buffer[pos]) >= 0 ? 1 : 0;
+        }
+    }
+
+    static final class CharMatcher extends StrMatcher {
+        private char ch;        /** The character to match. */
+        CharMatcher(char ch) { super(); this.ch = ch; } 
+        public int isMatch(char[] buffer, int pos, int bufferStart, int bufferEnd) {
+            return ch == buffer[pos] ? 1 : 0;
+        }
+    }
+
+    static final class StringMatcher extends StrMatcher {
+        private char[] chars;        /** The string to match, as a character array. */
+        StringMatcher(String str) { super(); chars = str.toCharArray(); }
+        public int isMatch(char[] buffer, int pos, int bufferStart, int bufferEnd) {
+            int len = chars.length;
+            if (pos + len > bufferEnd) {
+                return 0;
+            }
+            for (int i = 0; i < chars.length; i++, pos++) {
+                if (chars[i] != buffer[pos]) {
+                    return 0;
+                }
+            }
+            return len;
+        }
+    }
+
+    static final class NoMatcher extends StrMatcher {
+        NoMatcher() { super(); }
+        public int isMatch(char[] buffer, int pos, int bufferStart, int bufferEnd) { return 0; }
+    }
+
+    static final class TrimMatcher extends StrMatcher {
+        TrimMatcher() { super(); }
+        public int isMatch(char[] buffer, int pos, int bufferStart, int bufferEnd) {
+            return buffer[pos] <= 32 ? 1 : 0;
+        }
+    }
+}
