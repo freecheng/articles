@@ -1,0 +1,125 @@
+			Systems and software engineering
+	- Systems and software Quality Requirements and Evaluation (SQuaRE) 
+			v0.1 FC 2017-01-04
+
+* Overview
+    The general goal of creating the SQuaRE set of International Standards was to move to a logically organized, enriched and unified series covering two main processes: software quality requirements specification and systems and software quality evaluation, supported by a systems and software quality measurement process. The purpose of the SQuaRE set of International Standards is to assist those developing and acquiring systems and software products with the specification and evaluation of quality requirements. It establishes criteria for the specification of systems and software product quality requirements, their measurement, and evaluation. It includes a two-part quality model for aligning customer definitions of quality with attributes of the development process. In addition, the series provides recommended measures of systems and software product quality attributes that can be used by developers, acquirers, and evaluators.
+    SQuaRE replaced ISO/IEC 9126 (Software product quality) and ISO/IEC 14598 (Software product evaluation).
+    SQuaRE consists of the following five divisions:
+    - ISO/IEC 2500n - Quality Management Division,
+	      25000 - Guide to SQuaRE
+	      25001 - Planning and management
+    - ISO/IEC 2501n - Quality Model Division,
+	      25010 - System and software quality models
+	      25012 - Data quality model
+    - ISO/IEC 2502n - Quality Measurement Division,
+	      25020 - Measurement reference model and guide
+	      25021 - Quality measure elements
+	      25022 - Metrics for internal quality
+	      25023 - Metrics for external quality
+	      25024 - Metrics for quality in use
+    - ISO/IEC 2503n - Quality Requirements Division,
+	      25030 - Quality requirements
+    - ISO/IEC 2504n - Quality Evaluation Division
+	      25040 - Evaluation process
+    - ISO/IEC 25050 to ISO/IEC 25099 - Extension division
+
+* 25030 - Quality requirements
+** iso-iec_25030_system_requirements_categorisation
++---------------+---------------+---------------+---------------+-------------------------------+
+|		|		|		|		| Functional Requirement	|
+|		|		|		| Inherent    	+-------------------------------+
+|		|		|		| property    	|		| Quality in use|
+|		|		|		| Requirements  |		| Requirements	|
+|		|		|		|		| Software 	+---------------+
+|		|		|		|		| Quality	| External	|
+|		|		|		|		| Requirements	| quality	|
+|		|		|		|		|		| Requirements	|
+|		|		|		|		|		+---------------+
+|		|		|		|		| 		| Internal	|
+|		|		|		|		| 		| quality 	|
+|		|		| Software	|		| 		| Requirements	|
+|		|		| Product	+---------------+-------------------------------+
+|		|		| Requirements	| Assigned 	|				|
+|		|		|		| Property 	| Managerial requirements  	|
+|		| Software	|		| Requirements	|				|
+|		| Requirements	+---------------+---------------+-------------------------------+
+|		|		| Software	| Development process requirements		|
+|		|		| Development	+-----------------------------------------------+
+|    System	|		| Requirements	| Development organisation requirements		|
+| Requirements	+---------------+---------------+-----------------------------------------------+
+|		| Other System	| Include for example requirements for computer hardware, data,	|
+|		| Requirements	| mechanical parts, and human business processes		|
++---------------+---------------+---------------------------------------------------------------+
+
+ Managerial requirements including for example requirements for price, delivery date, product future, and product supplier
+
+* 25010 - System and software quality models
+** ISO-IEC 25010:2011 Quality in use model
++--------------------------------------+-------------------------------+
+Characteristic				Description
++--------------------------------------+-------------------------------+
+Effectiveness				accuracy and completeness with which users achieve specified goals
+Efficiency				resources expended in relation to the accuracy and completeness with which users achieve goals. NOTE Relevant resources can include time to complete the task (human resources), materials, or the financial cost of usage.
+Satisfaction				degree to which user needs are satisfied when a product or system is used in a specified context of use. NOTE 1 For a user who does not directly interact with the product or system, only purpose accomplishment and trust are relevant.  NOTE 2 Satisfaction is the user’s response to interaction with the product or system, and includes attitudes towards use of the product.
+    Usefulness				degree to which a user is satisfied with their perceived achievement of pragmatic goals, including the results of use and the consequences of use
+    Trust				degree to which a user or other stakeholder has confidence that a product or system will behave as intended
+    Pleasure				degree to which a user obtains pleasure from fulfilling their personal needs. NOTE Personal needs can include needs to acquire new knowledge and skills, to communicate personal identity and to provoke pleasant memories.
+    Comfort				degree to which the user is satisfied with physical comfort
+Freedom from risk			degree to which a product or system mitigates the potential risk to economic status, human life, health, or the environment. NOTE Risk is a function of the probability of occurrence of a given threat and the potential adverse consequences of that threat's occurrence.
+    Economic risk mitigation		degree to which a product or system mitigates the potential risk to financial status, efficient operation, commercial property, reputation or other resources in the intended contexts of use
+    Health and safety risk mitigation	degree to which a product or system mitigates the potential risk to people in the intended contexts of use
+    Environmental risk mitigation	degree to which a product or system mitigates the potential risk to property or the environment in the intended contexts of use
+Context coverage			degree to which a product or system can be used with effectiveness, efficiency, freedom from risk and satisfaction in both specified contexts of use and in contexts beyond those initially explicitly identified. NOTE Context of use is relevant to both quality in use and some product quality (sub)characteristics (where it is referred to as “specified conditions”).
+    Context completeness		degree to which a product or system can be used with effectiveness, efficiency, freedom from risk and satisfaction in all the specified contexts of use. NOTE Context completeness can be specified or measured either as the degree to which a product can be used by specified users to achieve specified goals with effectiveness, efficiency, freedom from risk and satisfaction in all the intended contexts of use, or by the presence of product properties that support use in all the intended contexts of use.  EXAMPLE The extent to which software is usable using a small screen, with low network bandwidth, by a non-expert user; and in a fault-tolerant mode (e.g. no network connectivity).
+    Flexibility 			degree to which a product or system can be used with effectiveness, efficiency, freedom from risk and satisfaction in contexts beyond those initially specified in the requirements. NOTE 1 Flexibility can be achieved by adapting a product (see 4.2.8.1) for additional user groups, tasks and cultures.  NOTE 2 Flexibility enables products to take account of circumstances, opportunities and individual preferences that had not been anticipated in advance.  NOTE 3 If a product is not designed for flexibility, it might not be safe to use the product in unintended contexts.  NOTE 4 Flexibility can be measured either as the extent to which a product can be used by additional types of users to achieve additional types of goals with effectiveness, efficiency, freedom from risk and satisfaction in additional types of contexts of use, or by a capability to be modified to support adaptation for new types of users, tasks and environments, and suitability for individualization as defined in ISO 9241-110.
++--------------------------------------+-------------------------------+
+
+** ISO-IEC 25010:2011 Product quality model
++--------------------------------------+-------------------------------+
+Characteristic				Description
++--------------------------------------+-------------------------------+
+Functional suitability			degree to which a product or system provides functions that meet stated and implied needs when used under specified conditions
+    Functional completeness		degree to which the set of functions covers all the specified tasks and user objectives
+    Functional correctness		degree to which a product or system provides the correct results with the needed degree of precision
+    Functional appropriateness		degree to which the functions facilitate the accomplishment of specified tasks and objectives. EXAMPLE A user is only presented with the necessary steps to complete a task, excluding any unnecessary steps.
+Performance efficiency			performance relative to the amount of resources used under stated conditions. NOTE Resources can include other software products, the software and hardware configuration of the system, and materials (e.g. print paper, storage media).
+    Time behaviour			degree to which the response and processing times and throughput rates of a product or system, when performing its functions, meet requirements
+    Resource utilization		degree to which the amounts and types of resources used by a product or system, when performing its functions, meet requirements
+    Capacity				degree to which the maximum limits of a product or system parameter meet requirements.  NOTE Parameters can include the number of items that can be stored, the number of concurrent users, the communication bandwidth, throughput of transactions, and size of database.
+Compatibility				degree to which a product, system or component can exchange information with other products, systems or components, and/or perform its required functions, while sharing the same hardware or software environment. NOTE Adapted from ISO/IEC/IEEE 24765
+    Co-existence			degree to which a product can perform its required functions efficiently while sharing a common environment and resources with other products, without detrimental impact on any other product
+    Interoperability			degree to which two or more systems, products or components can exchange information and use the information that has been exchanged
+Usability				degree to which a product or system can be used by specified users to achieve specified goals with effectiveness, efficiency and satisfaction in a specified context of use.  NOTE 1 Adapted from ISO 9241-210.  NOTE 2 Usability can either be specified or measured as a product quality characteristic in terms of its subcharacteristics, or specified or measured directly by measures that are a subset of quality in use.
+    Appropriateness recognizability	degree to which users can recognize whether a product or system is appropriate for their needs cf. functional appropriateness (4.2.1.3).  NOTE 1 Appropriateness recognizability will depend on the ability to recognize the appropriateness of the product or system’s functions from initial impressions of the product or system and/or any associated documentation.  NOTE 2 The information provided by the product or system can include demonstrations, tutorials, documentation or, for a web site, the information on the home page.
+    Learnability			degree to which a product or system can be used by specified users to achieve specified goals of learning to use the product or system with effectiveness, efficiency, freedom from risk and satisfaction in a specified context of use.  NOTE Can be specified or measured either as the extent to which a product or system can be used by specified users to achieve specified goals of learning to use the product or system with effectiveness, efficiency, freedom from risk and satisfaction in a specified context of use, or by product properties corresponding to suitability for learning as defined in ISO 9241-110.
+    Operability				degree to which a product or system has attributes that make it easy to operate and control NOTE Operability corresponds to controllability, (operator) error tolerance and conformity with user expectations as defined in ISO 9241-110.
+    User error protection		degree to which a system protects users against making errors
+    User interface aesthetics		degree to which a user interface enables pleasing and satisfying interaction for the user. NOTE This refers to properties of the product or system that increase the pleasure and satisfaction of the user, such as the use of colour and the nature of the graphical design.
+    Accessibility			degree to which a product or system can be used by people with the widest range of characteristics and capabilities to achieve a specified goal in a specified context of use. NOTE 1 The range of capabilities includes disabilities associated with age.  NOTE 2 Accessibility for people with disabilities can be specified or measured either as the extent to which a product or system can be used by users with specified disabilities to achieve specified goals with effectiveness, efficiency, freedom from risk and satisfaction in a specified context of use, or by the presence of product properties that support accessibility.
+Reliability				degree to which a system, product or component performs specified functions under specified conditions for a specified period of time. NOTE 1 Adapted from ISO/IEC/IEEE 24765.  NOTE 2 Wear does not occur in software. Limitations in reliability are due to faults in requirements, design and implementation, or due to contextual changes.  NOTE 3 Dependability characteristics include availability and its inherent or external influencing factors, such as availability, reliability (including fault tolerance and recoverability), security (including confidentiality and integrity), maintainability, durability, and maintenance support.
+    Maturity				degree to which a system, product or component meets needs for reliability under normal operation NOTE The concept of maturity can also be applied to other quality characteristics to indicate the degree to which they meet required needs under normal operation.
+    Availability			degree to which a system, product or component is operational and accessible when required for use [ISO/IEC/IEEE 24765]. NOTE Externally, availability can be assessed by the proportion of total time during which the system, product or component is in an up state. Availability is therefore a combination of maturity (which governs the frequency of failure), fault tolerance and recoverability (which governs the length of down time following each failure).
+    Fault tolerance			degree to which a system, product or component operates as intended despite the presence of hardware or software faults. NOTE Adapted from ISO/IEC/IEEE 24765.
+    Recoverability			degree to which, in the event of an interruption or a failure, a product or system can recover the data directly affected and re-establish the desired state of the system NOTE Following a failure, a computer system will sometimes be down for a period of time, the length of which is determined by its recoverability.
+Security				degree to which a product or system protects information and data so that persons or other products or systems have the degree of data access appropriate to their types and levels of authorization
+    Confidentiality			degree to which a product or system ensures that data are accessible only to those authorized to have access
+    Integrity				degree to which a system, product or component prevents unauthorized access to, or modification of, computer programs or data [ISO/IEC/IEEE 24765]
+    Non-repudiation			degree to which actions or events can be proven to have taken place, so that the events or actions cannot be repudiated later. NOTE Adapted from ISO 7498-2:1989.
+    Accountability			degree to which the actions of an entity can be traced uniquely to the entity. NOTE Adapted from ISO 7498-2:1989.
+    Authenticity			degree to which the identity of a subject or resource can be proved to be the one claimed. NOTE Adapted from ISO/IEC 13335-1:2004.
+Maintainability				degree of effectiveness and efficiency with which a product or system can be modified by the intended maintainers.  NOTE 1 Modifications can include corrections, improvements or adaptation of the software to changes in environment, and in requirements and functional specifications. Modifications include those carried out by specialized support staff, and those carried out by business or operational staff, or end users.  NOTE 2 Maintainability includes installation of updates and upgrades.  NOTE 3 Maintainability can be interpreted as either an inherent capability of the product or system to facilitate maintenance activities, or the quality in use experienced by the maintainers for the goal of maintaining the product or system.
+    Modularity				degree to which a system or computer program is composed of discrete components such that a change to one component has minimal impact on other components
+    Reusability				degree to which an asset can be used in more than one system, or in building other assets.  NOTE Adapted from IEEE 1517-2004.
+    Analysability			degree of effectiveness and efficiency with which it is possible to assess the impact on a product or system of an intended change to one or more of its parts, or to diagnose a product for deficiencies or causes of failures, or to identify parts to be modified. NOTE Implementation can include providing mechanisms for the product or system to analyse its own faults and provide reports prior to a failure or other event.
+    Modifiability			degree to which a product or system can be effectively and efficiently modified without introducing defects or degrading existing product quality. NOTE 1 Implementation includes coding, designing, documenting and verifying changes.  NOTE 2 Modularity (4.2.7.1) and analysability (4.2.7.3) can influence modifiability.  NOTE 3 Modifiability is a combination of changeability and stability.
+    Testability				degree of effectiveness and efficiency with which test criteria can be established for a system, product or component and tests can be performed to determine whether those criteria have been met. NOTE Adapted from ISO/IEC/IEEE 24765.
+Portability				degree of effectiveness and efficiency with which a system, product or component can be transferred from one hardware, software or other operational or usage environment to another. NOTE 1 Adapted from ISO/IEC/IEEE 24765.  NOTE 2 Portability can be interpreted as either an inherent capability of the product or system to facilitate porting activities, or the quality in use experienced for the goal of porting the product or system.
+    Adaptability			degree to which a product or system can effectively and efficiently be adapted for different or evolving hardware, software or other operational or usage environments. NOTE 1 Adaptability includes the scalability of internal capacity (e.g. screen fields, tables, transaction volumes, report formats, etc.).  NOTE 2 Adaptations include those carried out by specialized support staff, and those carried out by business or operational staff, or end users.  NOTE 3 If the system is to be adapted by the end user, adaptability corresponds to suitability for individualization as defined in ISO 9241-110.
+    Installability			degree of effectiveness and efficiency with which a product or system can be successfully installed and/or uninstalled in a specified environment. NOTE If the product or system is to be installed by an end user, installability can affect the resulting functional appropriateness and operability.
+    Replaceability			degree to which a product can replace another specified software product for the same purpose in the same environment. NOTE 1 Replaceability of a new version of a software product is important to the user when upgrading.  NOTE 2 Replaceability can include attributes of both installability and adaptability. The concept has been introduced as a subcharacteristic of its own because of its importance.  NOTE 3 Replaceability will reduce lock-in risk: so that other software products can be used in place of the present one, for example by the use of standardized file formats.
++--------------------------------------+-------------------------------+
+
+* Terms
+ISO (the International Organization for Standardization)
+IEC (the International Electrotechnical Commission)
