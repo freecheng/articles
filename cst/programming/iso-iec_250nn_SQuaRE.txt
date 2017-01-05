@@ -3,8 +3,12 @@
 			v0.1 FC 2017-01-04
 
 * Overview
+
+* 25000 - Guide to SQuaRE
+** introduction
     The general goal of creating the SQuaRE set of International Standards was to move to a logically organized, enriched and unified series covering two main processes: software quality requirements specification and systems and software quality evaluation, supported by a systems and software quality measurement process. The purpose of the SQuaRE set of International Standards is to assist those developing and acquiring systems and software products with the specification and evaluation of quality requirements. It establishes criteria for the specification of systems and software product quality requirements, their measurement, and evaluation. It includes a two-part quality model for aligning customer definitions of quality with attributes of the development process. In addition, the series provides recommended measures of systems and software product quality attributes that can be used by developers, acquirers, and evaluators.
     SQuaRE replaced ISO/IEC 9126 (Software product quality) and ISO/IEC 14598 (Software product evaluation).
+
     SQuaRE consists of the following five divisions:
     - ISO/IEC 2500n - Quality Management Division,
 	      25000 - Guide to SQuaRE
@@ -22,9 +26,79 @@
 	      25030 - Quality requirements
     - ISO/IEC 2504n - Quality Evaluation Division
 	      25040 - Evaluation process
+	      25041 - Evaluation guide for developer, acquiers, and independent evalutors.
+	      25045 - Evaluation model for recoverability
     - ISO/IEC 25050 to ISO/IEC 25099 - Extension division
+	      25051 - Requirements for quality of Ready ot use Software Product (RUSP) and isntructions for testing.
+	      25060 - Common Industry Format (CIF) for usability: General framework for usability-related information
+	      25062 - Common Industry Format (CIF) for usability: Test reports
+	      25063 - Common Industry Format (CIF) for usability: Context of use description
+	      25064 - Common Industry Format (CIF) for usability: User needs report
+	      25065 - Common Industry Format (CIF) for usability: User Requirements Specification
+	      25066 - Common Industry Format (CIF) for usability: Usability Evaluation Report
 
+    Figure 2 - SQuaRE general reference model
+    This model was created to help the users to navigate through SQuaRE series of standards.
+
+** Systems and software product quality life cycle model
+    This quality life cycle model addresses quality in three principal phases of the software product life cycle:
+    - the product under development phase is the subject of internal measures of software quality;
+    - the product testing phase is the subject of external measures of software quality, and
+    - the product in use phase is the subject of quality in use.
+
+    The system/software quality life cycle model also indicates that achieving acceptable levels of quality should be an integral part of the development process for each type of quality including: requirements, implementation and validation of the results.
+
+    Requirements for quality in use specify the required levels of quality from the users' point of view. These requirements are derived from the needs of users and other stakeholders (such as software developers, system integrators, acquires, or owners). Quality in use requirements are used as the target for validation of the software product by the user. Requirements for quality in use characteristics should be stated in the quality requirements specification using criteria for quality in use measures that are used when a product is evaluated.
+
+    Requirements for external measures of computer system quality specify the required levels of quality from the external view. They include requirements derived from stakeholder quality requirements, including quality in use requirements. External software quality requirements are used as the target for technical verification and validation of the software product. Requirements for external measures of quality should be stated quantitatively in the quality requirements specification using criteria for external measures that are used when a product is evaluated.
+
+    Requirements for internal measures of software quality specify the level of required quality from the internal view of the product. They include requirements derived from external quality requirements. Requirements for internal measures of software quality are used to specify properties of intermediate software products (specifications, source code, etc.). Internal software quality requirements may also be used to specify properties of deliverable, non-executable software products such as documentation and manuals. Requirements for internal measures of software quality can be used as targets for verification at various stages of development. They can also be used for defining strategies of development and criteria for evaluation and verification during development.
+
+    Refer to Figure 3 in standard document.
+
+** Terms
 * 25030 - Quality requirements
+** 5.1 Software and systems
+    Software is the main focus of this International Standard. However, software usually appears as part of a larger system.
+    +-- Enterprice System --------------------------------------------------------------+
+    | +-- Information System -----------------------------------+			|
+    | | +-- Computer System 1 --------------------------------+ |	+------------+	|
+    | | | +----------+ +-----------+ +-------------+ +------+ | |	|  Human     |	|
+    | | | | Computer | | Operating | | Application | | Data | | |<----->|  Business  |	|
+    | | | | Hardware | |  System   | |  software   | |      | | |	|  process   |	|
+    | | | +----------+ +-----------+ +-------------+ +------+ | |	|	     |	|
+    | | +-----------------------------------------------------+ |	+------------+	|
+    | |                             ^                           |	     ^		|
+    | |                             | communication             |	     |		|
+    | |                             v                           |	     v		|
+    | | +-- Computer System 2 --------------------------------+ |	+------------+	|
+    | | | +----------+ +-----------+ +-------------+ +------+ | |	|     	     |	|
+    | | | | Computer | | Operating | | Application | | Data | | |<----->| Mechanical |	|
+    | | | | Hardware | |  System   | |  software   | |      | | |	| System     |	|
+    | | | +----------+ +-----------+ +-------------+ +------+ | |	|	     |	|
+    | | +-----------------------------------------------------+ |	+------------+	|
+    | +---------------------------------------------------------+			|
+    +-----------------------------------------------------------------------------------+
+    			Figure 2 - Example of system model
+    Figure 2 is an example of a system model showing hierarchies of systems including an information system, a mechanical system, human business processes and communication among them.  There may be several different appropriate ways of defining the elements of a system. Software may be considered one of the elements of a system. A computer system is an example of a system, which includes software. The elements of a computer system include the computer hardware, operating system and data necessary to apply the software. A computer system represents an applicable model when discussing single user software like a word processor. Client–server software or internet applications need a more complex system model like an information system which includes more communicating computer systems. E-commerce applications often include human business processes as well. Many devices include both computer systems and mechanical systems such as an antilock braking system (ABS) of a car. The luggage handling at an airport includes both computer systems, mechanical systems (such as conveyer belts), and human business processes.  This example illustrates that humans can be part of a system.
+
+** 5.2 Stakeholders and stakeholder requirements
+    +-----------------------------------------------------------------------------------+
+    | +---------------+              +---------------+              +---------------+   |
+    | | Stakeholder   |              | Stakeholder   |              |    System     |   |
+    | | needs and     | Requirement  | requirements  | Requirement  | requirements  |   |
+    | | expectations  |  definition  |               |  analysis    | Constraints   |   |
+    | |               |  process     |               |  process     |               |   |
+    | |               |------------->| Elicited from |------------->| Formalized    |   |
+    | | * stated      |              | all relevant  |              | System        |   |
+    | | * implied     |              | stakeholders  |              | Requirements  |   |
+    | | * unaware     |              |               |              | and           |   |
+    | |               |              |               |              | Constraints   |   |
+    | |               |              |               |              |               |   |
+    | |               |              |               |              |               |   |
+    | +---------------+              +---------------+              +---------------+   |
+    +-----------------------------------------------------------------------------------+
+
 ** iso-iec_25030_system_requirements_categorisation
 +---------------+---------------+---------------+---------------+-------------------------------+
 |		|		|		|		| Functional Requirement	|
@@ -55,7 +129,12 @@
  Managerial requirements including for example requirements for price, delivery date, product future, and product supplier
 
 * 25010 - System and software quality models
+    The quality of a system is the degree to which the system satisfies the stated and implied needs of its various stakeholders, and thus provides value. These stated and implied needs are represented in the SQuaRE series of International Standards by quality models that categorize product quality into characteristics, which in some cases are further subdivided into subcharacteristics. (Some subcharacteristics are divided into sub-subcharacteristics.) This hierarchical decomposition provides a convenient breakdown of product quality.
+
+    The scope of the models excludes purely functional properties (see C.6), but it does include functional suitability (see 4.2.1).
 ** ISO-IEC 25010:2011 Quality in use model
+    A quality in use model composed of five characteristics (some of which are further subdivided into subcharacteristics) that relate to the outcome of interaction when a product is used in a particular context of use. This system model is applicable to the complete human-computer system, including both computer systems in use and software products in use. Each characteristic can be assigned to different activities of stakeholders, for example, the interaction of an operator or the maintenance of a developer.
+
 +--------------------------------------+-------------------------------+
 Characteristic				Description
 +--------------------------------------+-------------------------------+
@@ -76,6 +155,7 @@ Context coverage			degree to which a product or system can be used with effectiv
 +--------------------------------------+-------------------------------+
 
 ** ISO-IEC 25010:2011 Product quality model
+A product quality model composed of eight characteristics (which are further subdivided into subcharacteristics) that relate to static properties of software and dynamic properties of the computer system. The model is applicable to both computer systems and software products.
 +--------------------------------------+-------------------------------+
 Characteristic				Description
 +--------------------------------------+-------------------------------+
@@ -120,6 +200,26 @@ Portability				degree of effectiveness and efficiency with which a system, produ
     Replaceability			degree to which a product can replace another specified software product for the same purpose in the same environment. NOTE 1 Replaceability of a new version of a software product is important to the user when upgrading.  NOTE 2 Replaceability can include attributes of both installability and adaptability. The concept has been introduced as a subcharacteristic of its own because of its importance.  NOTE 3 Replaceability will reduce lock-in risk: so that other software products can be used in place of the present one, for example by the use of standardized file formats.
 +--------------------------------------+-------------------------------+
 
+** 3.6 Quality from different stakeholder perspectives
+The quality models provide a framework for collecting stakeholder needs. Stakeholders include the following types of user:
+1. Primary user: person who interacts with the system to achieve the primary goals.
+2. Secondary users who provide support, for example
+a) content provider, system manager/administrator, security manager;
+b) maintainer, analyzer, porter, installer.
+3. Indirect user: person who receives output, but does not interact with the system.
+
+user:		individual or group that interacts with a system or benefits from a system during its utilization
+stakeholder:	individual or organization having a right, share, claim or interest in a system or in its possession of characteristics that meet their needs and expectations. It include, but are not limited to, end users, end user organizations, supporters, developers, producers, trainers, maintainers, disposers, acquirers, supplier organizations and regulatory bodies.
+end user: individual person who ultimately benefits from the outcomes of the system
+NOTE The end user can be a regular operator of the software product or a casual user such as a member of the
+public.
+Direct user:	person who interacts with the product. NOTE 1 This includes primary and secondary users.
+developer:	individual or organization that performs development activities (including requirements analysis, design, testing through acceptance) during the system or software life cycle process.
+acquirer:	 individual or organisation that acquires or procures a system, software product or software service from a supplier
+
 * Terms
 ISO (the International Organization for Standardization)
 IEC (the International Electrotechnical Commission)
+quality property:	 measurable component of quality
+quality measure element(QME): measure defined in terms of an attribute and the measurement method for quantifying it, including optionally
+the transformation by a mathematical function
