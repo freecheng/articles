@@ -1,0 +1,192 @@
+
+*		CFA Program Course of Study
+    The CFA Program course of study includes the Candidate Body of Knowledge (CBOK), the curriculum content, learning outcome statements (LOS), and the topic area weights. 
+** Three Levels
+    The course of study is organized into three levels and each level requires passing a six-hour exam. The program curriculum increases in complexity as you move through the three levels:
+	- Level I: Focuses on a basic knowledge of the ten topic areas and simple analysis using investment tools
+	- Level II: Emphasizes the application of investment tools and concepts with a focus on the valuation of all types of assets
+	- Level III: Focuses on synthesizing all of the concepts and analytical methods in a variety of applications for effective portfolio management and wealth planning
+    Candidates report dedicating in excess of 300 hours of study per level to prepare for each exam.
+
+** Study Support
+*** Program Course of Study
+    - CFA candidate body of knowledge topic outline
+    - Topic area weights
+    - Study sessions, LOS, and errata
+    - Curriculum source references (PDF)
+    - Purchase the print curriculum outside of exam registration
+*** Study Tools
+    - Curriculum eBook
+    - Interactive study planner
+    - Topic tests and mock exams
+    - Mobile study app: Android device | Apple device
+
+
+* CFA Exam Topic Area Weights
+	+-----------------------------------------------------------+
+	Level I Topic Area
+	+-----------------------------------------------------------+
+	   15	Ethical and Professional Standards
+	   12	Quantitative Methods
+	   10	Economics
+	   20	Financial Reporting and Analysis
+	    7	Corporate Finance
+	   10	Equity Investments
+	   10	Fixed Income
+	    5	Derivatives
+	    4	Alternative Investments
+	    7	Portfolio Management and Wealth Planning
+	  100	Total
+	+-----------------------------------------------------------+
+Note: These weights are intended to guide the curriculum and exam development processes. Actual exam weights may vary slightly from year to year. Please note that some topics are combined for testing purposes
+
+* Candidate Body of Knowledge Topic Outline
+	CBOK Topic Areas
+	I. Ethical and Professional Standards
+	A. Professional Standards of Practice
+	B. Ethical Practices
+
+	II. Quantitative Methods
+	A. Time Value of Money
+	B. Probability
+	C. Probability Distributions and Descriptive Statistics
+	D. Sampling and Estimation
+	E. Hypothesis Testing
+	F. Correlation Analysis and Regression
+	G. Time-Series Analysis
+	H. Simulation Analysis
+	I. Technical Analysis
+
+	III. Economics
+	A. Market Forces of Supply and Demand
+	B. The Firm and Industry Organization
+	C. Measuring National Income and Growth
+	D. Business Cycles
+	E. The Monetary System
+	F. Inflation
+	G. International Trade and Capital Flows
+	H. Currency Exchange Rates
+	I. Monetary and Fiscal Policy
+	J. Economic Growth and Development
+	K. Effects of Government Regulation
+	L. Impact of Economic Factors on Investment Markets
+
+	IV. Financial Reporting and Analysis
+	A. Financial Reporting System (with an emphasis on IFRS)
+	B. Analysis of Principal Financial Statements
+	C. Financial Reporting Quality
+	D. Analysis of Inventories and Long-Lived Assets
+	E. Analysis of Taxes
+	F. Analysis of Debt
+	G. Analysis of Off-Balance-Sheet Assets and Liabilities
+	H. Analysis of Pensions, Stock Compensation, and Other Employee Benefits
+	I. Analysis of Inter-Corporate Investments
+	J. Analysis of Business Combinations
+	K. Analysis of Global Operations
+	L. Ratio and Financial Analysis
+	V. Corporate Finance
+	A. Corporate Governance
+	B. Dividend Policy
+	C. Capital Investment Decisions
+	D. Business and Financial Risk
+	E. Capital Structure Decisions
+	F. Working Capital Management
+	G. Mergers and Acquisitions and Corporate Restructuring
+
+	VI. Equity Investments
+	A. Types of Equity Securities and Their Characteristics
+	B. Equity Markets: Characteristics and Institutions
+	C. Equity Portfolio Benchmarks
+	D. Valuation of Individual Equity Securities
+	E. Fundamental Analysis (Sector, Industry, Company)
+	F. Equity Market Valuation and Return Analysis
+	G. Closely Held Companies and Inactively Traded Securities
+	H. Equity Portfolio Management Strategies
+
+	VII. Fixed Income
+	A. Types of Fixed-Income Securities and Their Characteristics
+	B. Fixed-Income Markets: Characteristics & Institutions
+	C. Fixed Income Portfolio Benchmarks
+	D. Fixed-Income Valuation (Sector, Industry, Company) and Return Analysis
+	E. Term Structure Determination and Yield Spreads
+	F. Analysis of Interest Rate Risk
+	G. Analysis of Credit Risk
+	H. Valuing Bonds with Embedded Options
+	I. Structured Products
+	J. Fixed-Income Portfolio Management Strategies
+
+	VIII. Derivatives
+	A. Types of Derivative Instruments and Their Characteristics
+	B. Forward Markets and Valuation of Forward Contracts
+	C. Futures Markets and Valuation of Futures Contracts
+	D. Options Markets and Valuation of Option Contracts
+	E. Swaps Markets and Valuation of Swap Contracts
+	F. Credit Derivatives Markets and Instruments
+	G. Uses of Derivatives in Portfolio Management
+
+	IX. Alternative Investments
+	A. Types of Alternative Investments and Their Characteristics
+	B. Real Estate Valuation
+	C. Private Equity/Venture Capital Valuation
+	D. Hedge Fund Strategies
+	E. Distressed Securities/Bankruptcies
+	F. Commodities and Managed Futures
+	G. Alternative Investment Management Strategies
+
+	X. Portfolio Management and Wealth Planning
+	A. The Investment Policy Statement
+	B. Modern Portfolio Management Concepts
+	C. Behavioral Finance
+	D. Management of Individual/Family Investor Portfolios
+	E. Management of Institutional Investor Portfolios
+	F. Investment Manager Selection
+	G. Economic Analysis and Setting Capital Market Expectations
+	H. Tax Efficiency Strategies
+	I. Asset Allocation
+	J. Portfolio Construction and Revision
+	K. Risk Management
+	L. Execution of Portfolio Decisions (Trading)
+	M. Performance Evaluation
+	N. Presentation of Performance Results
+
+* CFA Program Study Sessions, LOS, and Errata
+    When you register for an exam you gain access to the curriculum materials for your exam level, including study session outlines, learning outcome statements (LOS), and source references for the readings. 
+
+    Each level of the curriculum is organized into study sessions, with each study session containing a number of readings. There are learning outcome statements at the beginning of each reading.
+
+** What is a Learning Outcome Statement?
+    Learning Outcome Statements (LOS) are descriptions of specific knowledge, skills, and abilities that you should be able to apply after you complete a reading. The statements use command words such as “demonstrate,” “formulate,” or “evaluate” to indicate how much you should know about a given topic.
+
+
+* December 2017 Exam Calendar (Level I only)
+	25 January 2017		December 2017 exam registration opens
+	Upon registration	Topic tests available
+	15 March		Early registration fee deadline
+	15 August		Mock exams available
+	16 August		Standard registration fee deadline
+	1 September		Awareness Scholarships application deadline
+	13 September		Final (late) registration fee deadline
+	18 September		Final deadline for disability and religious alternate date testing accommodation requests to be received
+	9 October		Test center change request deadline
+	November		Exam admission tickets available
+	2 December		Exam day
+	Dec 2017–Jan 2018	Exams graded
+	January 2018		Exam results emailed and available online
+
+* CFA Program Study Planner
+	+------------------- CFA Level I Plan ----------------------+
+	Weight	Sessions  Days	Topic Area
+	+-----------------------------------------------------------+
+	   15	 1	   26	Ethical and Professional Standards
+	   12	 2	   34	Quantitative Methods
+	   10	 2	   31	Economics
+	   20	 4	   55	Financial Reporting and Analysis
+	    7	 2	   18	Corporate Finance
+	    7	 1	   18	Portfolio Management and Wealth Planning
+	   10	 2	   24	Equity Investments
+	   10	 2	   26	Fixed Income
+	    5	 1	   10	Derivatives
+	    4	 1	    5	Alternative Investments
+	+-----------------------------------------------------------+
+	  100	18	  262	Total	(Days for Review: 15 days)
+	+-----------------------------------------------------------+
